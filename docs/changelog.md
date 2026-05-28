@@ -12,6 +12,16 @@ Work in progress, not yet released.
 
 ### Added
 
+- Dashboard core loop: expense/income entry form, daily/weekly/monthly
+  totals, income-vs-expense balance, and per-category breakdown
+  (FR-5, FR-6, FR-10–FR-14).
+- Expenses CRUD API plus **edit and delete transactions** inline in the
+  dashboard's recent-transactions list (FR-7, FR-8).
+- **Budget management UI** at `/budgets`: create / edit / remove limits
+  with live current-month usage and near/over-limit alerts
+  (FR-15–FR-18); alerts also surface on the dashboard.
+- Configurable base currency via the `getUserBaseCurrency()` seam
+  (env-driven, default USD) and a 36-currency picker on entry.
 - Next.js 14 + TypeScript scaffold with App Router, Tailwind, ESLint.
 - Mongoose schemas (`User`, `Transaction`, `Budget`, `Subscription`)
   with indexes on `userId` and `userId + occurredAt desc`.
@@ -51,7 +61,6 @@ Work in progress, not yet released.
 ### Planned
 
 - NextAuth authentication and per-user data scoping.
-- Budget management UI.
 - CSV and PDF export.
 
 ## [0.1.0] — 2026-05-24 — *spec-only*

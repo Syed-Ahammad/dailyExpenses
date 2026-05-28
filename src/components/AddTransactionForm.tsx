@@ -195,16 +195,16 @@ export default function AddTransactionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+      className="space-y-4 rounded-lg border border-sand bg-card p-5 shadow-sm"
       aria-label="Add transaction"
     >
-      <h2 className="text-lg font-semibold text-slate-800">Add Transaction</h2>
+      <h2 className="text-lg font-semibold text-ink">Add Transaction</h2>
 
       {/* Error banner */}
       {error !== null && (
         <p
           role="alert"
-          className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="rounded-md bg-red-bg px-4 py-3 text-sm text-red-ink"
         >
           {error}
         </p>
@@ -212,7 +212,7 @@ export default function AddTransactionForm({
 
       {/* Type */}
       <fieldset>
-        <legend className="mb-1.5 block text-sm font-medium text-slate-700">
+        <legend className="mb-1.5 block text-sm font-medium text-ink">
           Type
         </legend>
         <div className="flex gap-4">
@@ -227,7 +227,7 @@ export default function AddTransactionForm({
                 value={t}
                 checked={form.type === t}
                 onChange={() => handleTypeChange(t)}
-                className="accent-slate-700"
+                className="accent-green"
               />
               <span className="capitalize">{t}</span>
             </label>
@@ -240,7 +240,7 @@ export default function AddTransactionForm({
         <div className="col-span-2 sm:col-span-2">
           <label
             htmlFor="amount"
-            className="mb-1 block text-sm font-medium text-slate-700"
+            className="mb-1 block text-sm font-medium text-ink"
           >
             Amount
           </label>
@@ -254,13 +254,13 @@ export default function AddTransactionForm({
             required
             value={form.amount}
             onChange={(e) => setField("amount", e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+            className="w-full rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
           />
         </div>
         <div>
           <label
             htmlFor="currency"
-            className="mb-1 block text-sm font-medium text-slate-700"
+            className="mb-1 block text-sm font-medium text-ink"
           >
             Currency
           </label>
@@ -269,7 +269,7 @@ export default function AddTransactionForm({
             required
             value={form.currency}
             onChange={(e) => handleCurrencyChange(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+            className="w-full rounded-sm border border-sand bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
           >
             {CURRENCIES.map((c) => (
               <option key={c.code} value={c.code}>
@@ -287,10 +287,10 @@ export default function AddTransactionForm({
         <div>
           <label
             htmlFor="rateToBase"
-            className="mb-1 block text-sm font-medium text-slate-700"
+            className="mb-1 block text-sm font-medium text-ink"
           >
             Rate to {baseCurrency}{" "}
-            <span className="font-normal text-slate-500">
+            <span className="font-normal text-muted">
               (how many {baseCurrency} per 1 {form.currency})
             </span>
           </label>
@@ -303,7 +303,7 @@ export default function AddTransactionForm({
             required
             value={form.rateToBase}
             onChange={(e) => setField("rateToBase", e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+            className="w-full rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
           />
         </div>
       )}
@@ -312,7 +312,7 @@ export default function AddTransactionForm({
       <div>
         <label
           htmlFor="category"
-          className="mb-1 block text-sm font-medium text-slate-700"
+          className="mb-1 block text-sm font-medium text-ink"
         >
           Category
         </label>
@@ -321,7 +321,7 @@ export default function AddTransactionForm({
           required
           value={form.category}
           onChange={(e) => setField("category", e.target.value)}
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full rounded-sm border border-sand bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
         >
           {categoryOptions.map((c) => (
             <option key={c} value={c}>
@@ -335,10 +335,10 @@ export default function AddTransactionForm({
       <div>
         <label
           htmlFor="paymentMethod"
-          className="mb-1 block text-sm font-medium text-slate-700"
+          className="mb-1 block text-sm font-medium text-ink"
         >
           Payment Method{" "}
-          <span className="font-normal text-slate-500">(optional)</span>
+          <span className="font-normal text-muted">(optional)</span>
         </label>
         <select
           id="paymentMethod"
@@ -346,7 +346,7 @@ export default function AddTransactionForm({
           onChange={(e) =>
             setField("paymentMethod", e.target.value as PaymentMethod)
           }
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full rounded-sm border border-sand bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
         >
           <option value="">— Select —</option>
           <option value="cash">Cash</option>
@@ -362,7 +362,7 @@ export default function AddTransactionForm({
       <div>
         <label
           htmlFor="occurredAt"
-          className="mb-1 block text-sm font-medium text-slate-700"
+          className="mb-1 block text-sm font-medium text-ink"
         >
           Date
         </label>
@@ -372,7 +372,7 @@ export default function AddTransactionForm({
           required
           value={form.occurredAt}
           onChange={(e) => setField("occurredAt", e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
         />
       </div>
 
@@ -380,10 +380,10 @@ export default function AddTransactionForm({
       <div>
         <label
           htmlFor="note"
-          className="mb-1 block text-sm font-medium text-slate-700"
+          className="mb-1 block text-sm font-medium text-ink"
         >
           Note{" "}
-          <span className="font-normal text-slate-500">(optional, max 500)</span>
+          <span className="font-normal text-muted">(optional, max 500)</span>
         </label>
         <textarea
           id="note"
@@ -392,14 +392,14 @@ export default function AddTransactionForm({
           placeholder="e.g. Lunch with client"
           value={form.note}
           onChange={(e) => setField("note", e.target.value)}
-          className="w-full resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full resize-none rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
         />
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full rounded-md bg-green px-4 py-2.5 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-soft disabled:cursor-not-allowed disabled:opacity-50"
       >
         {submitting ? "Saving…" : "Save Transaction"}
       </button>

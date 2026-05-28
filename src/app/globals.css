@@ -1,3 +1,73 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Design tokens — see docs/design-system.md §3, §5, §6.
+   Colors are referenced by tailwind.config.ts; keep all theming here so the
+   planned dark theme is a single token swap. */
+:root {
+  /* Surfaces */
+  --paper: #f4f1e8;
+  --card: #fffefa;
+  --sand: #e8e3d4;
+
+  /* Brand */
+  --green: #1f5c45;
+  --green-soft: #d9e7df;
+  --gold: #b8862f;
+
+  /* Text */
+  --ink: #14201c;
+  --muted: #7c8079;
+
+  /* Feedback (budget warnings + errors only) */
+  --amber-bg: #fbeccb;
+  --amber-ink: #8a5a10;
+  --red-bg: #f6d9d3;
+  --red-ink: #97331f;
+  --positive: #1f5c45;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 400ms;
+}
+
+@layer base {
+  /* Headings and money figures use the display serif (see components for the
+     per-figure font-display class). */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), Georgia, serif;
+  }
+}
+
+/* Staggered entrance for dashboard stat cards — fade + rise, set a per-card
+   animation-delay inline. transform/opacity only (cheap on phones). */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-rise {
+  animation: rise var(--dur-slow) var(--ease-out) both;
+}
+
+/* Honor reduced-motion: drop entrances, tweens, and transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

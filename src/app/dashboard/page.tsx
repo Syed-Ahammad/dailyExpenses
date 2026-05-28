@@ -19,6 +19,8 @@ import { TransactionModel } from "@/models/Transaction";
 import type { Transaction } from "@/models/Transaction";
 import { logger } from "@/lib/logger";
 import AddTransactionForm from "@/components/AddTransactionForm";
+import TransactionList from "@/components/TransactionList";
+import type { TransactionView } from "@/components/TransactionList";
 
 // The dashboard reflects live per-request data, so it must never be statically
 // prerendered. Until auth (which reads the session) makes this implicit, force
@@ -37,14 +39,6 @@ export const dynamic = "force-dynamic";
 function formatMoney(minor: number, currency: string): string {
   // minor / 100 is the one and only place we divide by 100 in the UI.
   return `${currency} ${(minor / 100).toFixed(2)}`;
-}
-
-function formatDate(date: Date | string): string {
-  return new Date(date).toLocaleDateString("en-AE", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
 }
 
 // ---------------------------------------------------------------------------
@@ -115,6 +109,18 @@ export default async function DashboardPage() {
 
   const { totals, byCategory, warnings } = dashboard;
 
+  // Serializable view model for the client TransactionList (Dates → ISO strings,
+  // ObjectId → string). Editing/deleting happens client-side against the API.
+  const transactionViews: TransactionView[] = recentTransactions.map((tx) => ({
+    id: String(tx._id),
+    type: tx.type as "expense" | "income",
+    amountMinor: tx.amountMinor,
+    currency: tx.currency,
+    category: tx.category,
+    note: tx.note ?? "",
+    occurredAt: new Date(tx.occurredAt).toISOString(),
+  }));
+
   // For the proportional bars — find the max spend to normalise widths.
   const maxSpend =
     byCategory.length > 0
@@ -122,20 +128,20 @@ export default async function DashboardPage() {
       : 0;
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+    <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       {/* Page header */}
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-[28px] font-semibold tracking-tight text-ink sm:text-[34px]">
             Dashboard
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted">
             All amounts in {baseCurrency}
           </p>
         </div>
         <Link
           href="/budgets"
-          className="shrink-0 text-sm font-medium text-slate-600 hover:text-slate-900 hover:underline"
+          className="shrink-0 rounded-pill px-3 py-1.5 text-sm font-medium text-green transition-colors hover:bg-green-soft focus:outline-none focus:ring-2 focus:ring-green-soft"
         >
           Manage budgets →
         </Link>
@@ -145,7 +151,7 @@ export default async function DashboardPage() {
       {dbError && (
         <div
           role="alert"
-          className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="mb-6 rounded-md bg-red-bg px-4 py-3 text-sm text-red-ink"
         >
           Could not connect to the database. Showing empty data — your
           transactions are safe. Check your MONGODB_URI and try again.
@@ -158,29 +164,34 @@ export default async function DashboardPage() {
       <section aria-label="Monthly summary" className="mb-8">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <SummaryCard
+            index={0}
             label="Expense Today"
             value={formatMoney(totals.expenseToday, baseCurrency)}
-            accent="red"
+            variant="expense"
           />
           <SummaryCard
+            index={1}
             label="Expense This Week"
             value={formatMoney(totals.expenseWeek, baseCurrency)}
-            accent="red"
+            variant="expense"
           />
           <SummaryCard
+            index={2}
             label="Expense This Month"
             value={formatMoney(totals.expenseMonth, baseCurrency)}
-            accent="red"
+            variant="expense"
           />
           <SummaryCard
+            index={3}
             label="Income This Month"
             value={formatMoney(totals.incomeMonth, baseCurrency)}
-            accent="green"
+            variant="income"
           />
           <SummaryCard
+            index={4}
             label="Balance This Month"
             value={formatMoney(totals.balanceMonth, baseCurrency)}
-            accent={totals.balanceMonth >= 0 ? "green" : "red"}
+            variant="emphasized"
           />
         </div>
       </section>
@@ -190,17 +201,15 @@ export default async function DashboardPage() {
       {/* ------------------------------------------------------------------ */}
       {warnings.length > 0 && (
         <section aria-label="Budget warnings" className="mb-8">
-          <h2 className="mb-3 text-base font-semibold text-slate-800">
-            Budget Alerts
-          </h2>
+          <h2 className="mb-3 text-lg font-semibold text-ink">Budget Alerts</h2>
           <ul className="space-y-2">
             {warnings.map((w) => (
               <li
                 key={w.category}
-                className={`flex items-center justify-between rounded-lg border px-4 py-3 text-sm ${
+                className={`flex items-center justify-between rounded-md px-4 py-3 text-sm ${
                   w.level === "over"
-                    ? "border-red-200 bg-red-50 text-red-800"
-                    : "border-amber-200 bg-amber-50 text-amber-800"
+                    ? "bg-red-bg text-red-ink"
+                    : "bg-amber-bg text-amber-ink"
                 }`}
               >
                 <span className="font-medium">{w.category}</span>
@@ -221,13 +230,13 @@ export default async function DashboardPage() {
           {/* Category breakdown — FR-13                                        */}
           {/* ---------------------------------------------------------------- */}
           <section aria-label="Category breakdown">
-            <h2 className="mb-3 text-base font-semibold text-slate-800">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               Spending by Category
             </h2>
             {byCategory.length === 0 ? (
-              <p className="text-sm text-slate-500">No expenses this month.</p>
+              <p className="text-sm text-muted">No expenses this month.</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-2.5">
                 {byCategory.map((row) => {
                   // Proportional bar width — 100% for the top category, others scaled.
                   const widthPct =
@@ -236,16 +245,16 @@ export default async function DashboardPage() {
                       : 0;
                   return (
                     <li key={row.category}>
-                      <div className="mb-0.5 flex items-center justify-between text-sm">
-                        <span className="text-slate-700">{row.category}</span>
-                        <span className="font-medium text-slate-900">
+                      <div className="mb-1 flex items-center justify-between text-sm">
+                        <span className="text-ink">{row.category}</span>
+                        <span className="font-display font-medium text-ink tabular-nums">
                           {formatMoney(row.spent, baseCurrency)}
                         </span>
                       </div>
                       {/* Proportional bar — width set via inline style for arbitrary % */}
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-2 w-full overflow-hidden rounded-pill bg-sand">
                         <div
-                          className="h-full rounded-full bg-slate-600"
+                          className="h-full rounded-pill bg-green transition-[width] duration-[400ms] ease-out"
                           style={{ width: `${widthPct}%` }}
                         />
                       </div>
@@ -260,70 +269,13 @@ export default async function DashboardPage() {
           {/* Recent transactions — last 20                                     */}
           {/* ---------------------------------------------------------------- */}
           <section aria-label="Recent transactions">
-            <h2 className="mb-3 text-base font-semibold text-slate-800">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               Recent Transactions
             </h2>
-            {recentTransactions.length === 0 ? (
-              <p className="text-sm text-slate-500">
-                No transactions recorded yet.
-              </p>
-            ) : (
-              <div className="overflow-x-auto rounded-xl border border-slate-200">
-                <table className="min-w-full text-sm">
-                  <thead>
-                    <tr className="bg-slate-50 text-left">
-                      <th className="px-4 py-2.5 font-medium text-slate-600">
-                        Date
-                      </th>
-                      <th className="px-4 py-2.5 font-medium text-slate-600">
-                        Category
-                      </th>
-                      <th className="px-4 py-2.5 font-medium text-slate-600">
-                        Note
-                      </th>
-                      <th className="px-4 py-2.5 text-right font-medium text-slate-600">
-                        Amount
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {recentTransactions.map((tx, i) => {
-                      // Display amount: currency + major units.
-                      // Expenses shown with a leading minus for visual clarity.
-                      // Division by 100 is the UI display edge (NFR-1).
-                      const majorDisplay = (tx.amountMinor / 100).toFixed(2);
-                      const isExpense = tx.type === "expense";
-                      return (
-                        <tr
-                          key={String(tx._id ?? i)}
-                          className="hover:bg-slate-50"
-                        >
-                          <td className="whitespace-nowrap px-4 py-2.5 text-slate-600">
-                            {formatDate(tx.occurredAt)}
-                          </td>
-                          <td className="px-4 py-2.5 text-slate-700">
-                            {tx.category}
-                          </td>
-                          <td className="max-w-[10rem] truncate px-4 py-2.5 text-slate-500">
-                            {tx.note ?? "—"}
-                          </td>
-                          <td
-                            className={`whitespace-nowrap px-4 py-2.5 text-right font-medium ${
-                              isExpense
-                                ? "text-red-600"
-                                : "text-emerald-600"
-                            }`}
-                          >
-                            {isExpense ? "−" : "+"}
-                            {tx.currency} {majorDisplay}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <TransactionList
+              baseCurrency={baseCurrency}
+              transactions={transactionViews}
+            />
           </section>
         </div>
 
@@ -343,23 +295,41 @@ export default async function DashboardPage() {
 interface SummaryCardProps {
   label: string;
   value: string;
-  accent: "green" | "red" | "neutral";
+  /** expense → ink, income → green, emphasized → filled-green hero (balance). */
+  variant: "expense" | "income" | "emphasized";
+  /** Position in the row, for the staggered entrance delay (~60ms apart). */
+  index: number;
 }
 
-function SummaryCard({ label, value, accent }: SummaryCardProps) {
+function SummaryCard({ label, value, variant, index }: SummaryCardProps) {
+  const emphasized = variant === "emphasized";
+
+  // Money figures in the display serif; income green, expense ink, balance white
+  // on the filled-green hero card (docs/design-system.md §3 color usage, §8).
+  const cardClass = emphasized
+    ? "bg-green shadow-md"
+    : "border border-sand bg-card shadow-sm";
+  const labelClass = emphasized ? "text-green-soft" : "text-muted";
   const valueClass =
-    accent === "green"
-      ? "text-emerald-700"
-      : accent === "red"
-        ? "text-red-700"
-        : "text-slate-900";
+    variant === "income"
+      ? "text-green"
+      : emphasized
+        ? "text-card"
+        : "text-ink";
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+    <div
+      className={`animate-rise rounded-md p-4 ${cardClass}`}
+      style={{ animationDelay: `${index * 60}ms` }}
+    >
+      <p
+        className={`text-[11px] font-medium uppercase tracking-label ${labelClass}`}
+      >
         {label}
       </p>
-      <p className={`mt-1.5 text-lg font-semibold tabular-nums ${valueClass}`}>
+      <p
+        className={`mt-1.5 font-display text-2xl font-semibold leading-tight tabular-nums ${valueClass}`}
+      >
         {value}
       </p>
     </div>

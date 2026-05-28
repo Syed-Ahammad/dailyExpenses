@@ -22,11 +22,11 @@ Status values: Done, In progress, Planned.
 | Sign up / sign in / sign out         | Planned     | FR-1, FR-2  |
 | Per-user data scoping                | Planned     | FR-3        |
 | Password reset                       | Planned     | FR-4        |
-| Edit transaction                     | Planned     | FR-7        |
-| Delete transaction                   | Planned     | FR-8        |
-| Budget create / edit / remove        | Planned     | FR-15, FR-16|
-| Budget warning at threshold          | Planned     | FR-17       |
-| Over-limit alert                     | Planned     | FR-18       |
+| Edit transaction                     | Done        | FR-7        |
+| Delete transaction                   | Done        | FR-8        |
+| Budget create / edit / remove        | Done        | FR-15, FR-16|
+| Budget warning at threshold          | Done        | FR-17       |
+| Over-limit alert                     | Done        | FR-18       |
 | CSV export                           | Planned     | FR-22       |
 | PDF export                           | Planned     | FR-23       |
 
