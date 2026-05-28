@@ -28,10 +28,40 @@ export interface CategorySpend {
   spent: number; // integer, base-currency minor units
 }
 
+/** Budget usage status relative to its limit and warning threshold. */
+export type BudgetLevel = "ok" | "near" | "over";
+
 export interface BudgetWarning {
   category: string;
   level: "near" | "over";
   percent: number; // integer
+}
+
+/**
+ * Single source of truth for the budget threshold rule (FR-17/FR-18).
+ * Given current-month spend and a budget's limit + warning percent, returns
+ * the integer usage percent and the status level.
+ *
+ * Shared by getDashboard()'s warnings and the /budgets management page so the
+ * over/near/ok boundaries can never drift apart. A zero/negative limit yields
+ * { percent: 0, level: "ok" } to avoid division by zero.
+ *
+ * @param spent          Current-month spend, base-currency minor units.
+ * @param limitMinorBase Budget limit, base-currency minor units.
+ * @param warnAtPercent  Threshold (1–100) at which the budget is "near".
+ */
+export function evaluateBudget(
+  spent: number,
+  limitMinorBase: number,
+  warnAtPercent: number,
+): { percent: number; level: BudgetLevel } {
+  if (limitMinorBase <= 0) {
+    return { percent: 0, level: "ok" };
+  }
+  const percent = Math.round((spent / limitMinorBase) * 100);
+  const level: BudgetLevel =
+    percent >= 100 ? "over" : percent >= warnAtPercent ? "near" : "ok";
+  return { percent, level };
 }
 
 export interface DashboardTotals {
@@ -279,20 +309,15 @@ export async function getDashboard(userId: string): Promise<DashboardResponse> {
   const warnings: BudgetWarning[] = [];
 
   for (const budget of budgets) {
-    // Guard: skip malformed or zero-limit budgets to avoid division by zero
-    if (budget.limitMinorBase <= 0) continue;
-
-    const spent = spendByCategory.get(budget.category) ?? 0;
-    const percent = Math.round((spent / budget.limitMinorBase) * 100);
-
-    if (percent >= 100) {
-      // FR-18: spending meets or exceeds the limit
-      warnings.push({ category: budget.category, level: "over", percent });
-    } else if (percent >= budget.warnAtPercent) {
-      // FR-17: spending reached the configurable warning threshold
-      warnings.push({ category: budget.category, level: "near", percent });
+    const { percent, level } = evaluateBudget(
+      spendByCategory.get(budget.category) ?? 0,
+      budget.limitMinorBase,
+      budget.warnAtPercent,
+    );
+    // FR-17 (near) / FR-18 (over): only surface budgets that crossed a threshold.
+    if (level !== "ok") {
+      warnings.push({ category: budget.category, level, percent });
     }
-    // below warnAtPercent → no warning entry
   }
 
   return { totals, byCategory, warnings };

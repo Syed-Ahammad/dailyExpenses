@@ -10,8 +10,9 @@
  * NFR-3 (mobile-first responsive layout).
  */
 
+import Link from "next/link";
 import { connectMongo } from "@/lib/mongodb";
-import { getUserId } from "@/lib/auth";
+import { getUserId, getUserBaseCurrency } from "@/lib/auth";
 import { getDashboard } from "@/lib/dashboard";
 import type { DashboardResponse } from "@/lib/dashboard";
 import { TransactionModel } from "@/models/Transaction";
@@ -31,10 +32,9 @@ export const dynamic = "force-dynamic";
 /**
  * Converts an integer minor-unit amount to a 2-decimal display string.
  * Division by 100 happens ONLY here — the display edge (NFR-1).
- * The currency label is the user's baseCurrency; defaulting to "AED" until
- * the User model and auth are wired in Phase 2.
+ * Call sites must always pass the user's baseCurrency explicitly.
  */
-function formatMoney(minor: number, currency = "AED"): string {
+function formatMoney(minor: number, currency: string): string {
   // minor / 100 is the one and only place we divide by 100 in the UI.
   return `${currency} ${(minor / 100).toFixed(2)}`;
 }
@@ -77,12 +77,13 @@ type LeanTransaction = Transaction & { _id: unknown };
  * via a direct TransactionModel query. On any DB failure, it renders an error
  * banner and falls back to zeroed data so the page shell always renders.
  *
- * Base currency is currently hard-coded to "AED" as a display label. It will
- * become `user.baseCurrency` once the User model and auth land in Phase 2.
+ * Base currency comes from the getUserBaseCurrency() seam (default USD). It
+ * becomes `user.baseCurrency` once the User model and auth land in Phase 2.
  */
 export default async function DashboardPage() {
-  // TODO Phase 2: replace "AED" with user.baseCurrency from session.
-  const BASE_CURRENCY = "AED";
+  // getUserBaseCurrency() is the base-currency seam — Phase 2 makes it
+  // return user.baseCurrency from the auth session.
+  const baseCurrency = await getUserBaseCurrency();
 
   let dashboard: DashboardResponse = EMPTY_DASHBOARD;
   let recentTransactions: LeanTransaction[] = [];
@@ -123,13 +124,21 @@ export default async function DashboardPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
       {/* Page header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-          Dashboard
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          All amounts in {BASE_CURRENCY}
-        </p>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            Dashboard
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            All amounts in {baseCurrency}
+          </p>
+        </div>
+        <Link
+          href="/budgets"
+          className="shrink-0 text-sm font-medium text-slate-600 hover:text-slate-900 hover:underline"
+        >
+          Manage budgets →
+        </Link>
       </div>
 
       {/* DB error banner — non-blocking, layout still renders */}
@@ -150,27 +159,27 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <SummaryCard
             label="Expense Today"
-            value={formatMoney(totals.expenseToday, BASE_CURRENCY)}
+            value={formatMoney(totals.expenseToday, baseCurrency)}
             accent="red"
           />
           <SummaryCard
             label="Expense This Week"
-            value={formatMoney(totals.expenseWeek, BASE_CURRENCY)}
+            value={formatMoney(totals.expenseWeek, baseCurrency)}
             accent="red"
           />
           <SummaryCard
             label="Expense This Month"
-            value={formatMoney(totals.expenseMonth, BASE_CURRENCY)}
+            value={formatMoney(totals.expenseMonth, baseCurrency)}
             accent="red"
           />
           <SummaryCard
             label="Income This Month"
-            value={formatMoney(totals.incomeMonth, BASE_CURRENCY)}
+            value={formatMoney(totals.incomeMonth, baseCurrency)}
             accent="green"
           />
           <SummaryCard
             label="Balance This Month"
-            value={formatMoney(totals.balanceMonth, BASE_CURRENCY)}
+            value={formatMoney(totals.balanceMonth, baseCurrency)}
             accent={totals.balanceMonth >= 0 ? "green" : "red"}
           />
         </div>
@@ -230,7 +239,7 @@ export default async function DashboardPage() {
                       <div className="mb-0.5 flex items-center justify-between text-sm">
                         <span className="text-slate-700">{row.category}</span>
                         <span className="font-medium text-slate-900">
-                          {formatMoney(row.spent, BASE_CURRENCY)}
+                          {formatMoney(row.spent, baseCurrency)}
                         </span>
                       </div>
                       {/* Proportional bar — width set via inline style for arbitrary % */}
@@ -320,7 +329,7 @@ export default async function DashboardPage() {
 
         {/* Right column: add transaction form */}
         <div>
-          <AddTransactionForm />
+          <AddTransactionForm baseCurrency={baseCurrency} />
         </div>
       </div>
     </main>

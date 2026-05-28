@@ -3,6 +3,7 @@
 
 import { z } from "zod";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "./categories";
+import { isSupportedCurrency } from "./currencies";
 
 const PAYMENT_METHODS = [
   "cash",
@@ -22,7 +23,11 @@ const CATEGORY_SOURCES = ["manual", "ai_suggested", "ai_confirmed"] as const;
 export const transactionBaseSchema = z.object({
   type: z.enum(["expense", "income"]),
   amountMinor: z.number().int().nonnegative(),
-  currency: z.string().length(3).toUpperCase(),
+  currency: z
+    .string()
+    .length(3)
+    .toUpperCase()
+    .refine(isSupportedCurrency, "Unsupported currency"),
   rateToBase: z.number().positive().default(1),
   category: z.string(),
   paymentMethod: z.enum(PAYMENT_METHODS).optional(),

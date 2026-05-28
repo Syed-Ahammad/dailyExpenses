@@ -3,7 +3,7 @@
 /**
  * AddTransactionForm — controlled form for creating an expense or income entry.
  *
- * Money convention: the user enters an amount in MAJOR units (e.g. 50.25 AED).
+ * Money convention: the user enters an amount in MAJOR units (e.g. 50.25 USD).
  * We convert to integer minor units with Math.round(amount * 100) before POSTing,
  * so the server always receives amountMinor as an integer (NFR-1).
  *
@@ -22,6 +22,7 @@ import {
   type ExpenseCategory,
   type IncomeCategory,
 } from "@/lib/categories";
+import { CURRENCIES } from "@/lib/currencies";
 
 type TransactionType = "expense" | "income";
 
@@ -54,11 +55,13 @@ function defaultCategory(type: TransactionType): string {
   return type === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0];
 }
 
-function initialState(): FormState {
+function initialState(baseCurrency: string): FormState {
   return {
     type: "expense",
     amount: "",
-    currency: "AED",
+    currency: baseCurrency,
+    // rateToBase is always "1" on reset — if the default currency equals baseCurrency,
+    // it stays "1". The user changes it only when recording a foreign-currency entry.
     rateToBase: "1",
     category: defaultCategory("expense"),
     paymentMethod: "",
@@ -67,13 +70,22 @@ function initialState(): FormState {
   };
 }
 
+interface AddTransactionFormProps {
+  /** The user's base currency (ISO 4217). Passed from the server so it never
+   *  needs to be re-fetched client-side. Defaults the currency select and
+   *  determines when rateToBase is hidden. */
+  baseCurrency: string;
+}
+
 /**
  * Controlled form component for recording an expense or income transaction.
  * All money conversion (major → minor) happens here before the network call.
  */
-export default function AddTransactionForm() {
+export default function AddTransactionForm({
+  baseCurrency,
+}: AddTransactionFormProps) {
   const router = useRouter();
-  const [form, setForm] = useState<FormState>(initialState);
+  const [form, setForm] = useState<FormState>(() => initialState(baseCurrency));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,6 +107,21 @@ export default function AddTransactionForm() {
       ...prev,
       type: newType,
       category: defaultCategory(newType), // reset category on type change
+    }));
+  }
+
+  /**
+   * When the currency select changes, auto-reset rateToBase to "1" if the
+   * selected currency matches the user's base currency — no conversion needed.
+   * For a foreign currency the user must enter the rate manually (live FX
+   * lookup is Phase 3).
+   */
+  function handleCurrencyChange(newCurrency: string) {
+    setForm((prev) => ({
+      ...prev,
+      currency: newCurrency,
+      // Snap rateToBase back to "1" when switching back to base currency.
+      rateToBase: newCurrency === baseCurrency ? "1" : prev.rateToBase,
     }));
   }
 
@@ -121,7 +148,7 @@ export default function AddTransactionForm() {
     const body = {
       type: form.type,
       amountMinor,
-      currency: form.currency.toUpperCase().trim(),
+      currency: form.currency,
       rateToBase: rateNum,
       category: form.category,
       ...(form.paymentMethod !== "" && { paymentMethod: form.paymentMethod }),
@@ -142,7 +169,7 @@ export default function AddTransactionForm() {
 
       if (res.status === 201) {
         // Success: reset form and refresh server-side data.
-        setForm(initialState());
+        setForm(initialState(baseCurrency));
         // router.refresh() re-runs the parent Server Component's data fetches
         // so totals and the recent transactions list reflect the new entry.
         router.refresh();
@@ -159,6 +186,11 @@ export default function AddTransactionForm() {
 
   const categoryOptions: readonly (ExpenseCategory | IncomeCategory)[] =
     form.type === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+
+  // rateToBase is only meaningful when the transaction currency differs from
+  // the user's base currency. When they match, force it to "1" and hide the
+  // field to avoid confusion and accidental miscalculation.
+  const isForeignCurrency = form.currency !== baseCurrency;
 
   return (
     <form
@@ -232,40 +264,49 @@ export default function AddTransactionForm() {
           >
             Currency
           </label>
-          <input
+          <select
             id="currency"
-            type="text"
-            maxLength={3}
-            placeholder="AED"
             required
             value={form.currency}
-            onChange={(e) => setField("currency", e.target.value.toUpperCase())}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-slate-400"
-          />
+            onChange={(e) => handleCurrencyChange(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code} — {c.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Rate to base — shown but kept minimal (FR-9) */}
-      <div>
-        <label
-          htmlFor="rateToBase"
-          className="mb-1 block text-sm font-medium text-slate-700"
-        >
-          Rate to Base{" "}
-          <span className="font-normal text-slate-500">(1 if same currency)</span>
-        </label>
-        <input
-          id="rateToBase"
-          type="number"
-          inputMode="decimal"
-          step="any"
-          min="0.000001"
-          required
-          value={form.rateToBase}
-          onChange={(e) => setField("rateToBase", e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
-        />
-      </div>
+      {/* Rate to base — only shown for foreign currencies (FR-9).
+          When currency === baseCurrency, rateToBase is always 1 (no conversion
+          needed) and the field is hidden to keep the form uncluttered. */}
+      {isForeignCurrency && (
+        <div>
+          <label
+            htmlFor="rateToBase"
+            className="mb-1 block text-sm font-medium text-slate-700"
+          >
+            Rate to {baseCurrency}{" "}
+            <span className="font-normal text-slate-500">
+              (how many {baseCurrency} per 1 {form.currency})
+            </span>
+          </label>
+          <input
+            id="rateToBase"
+            type="number"
+            inputMode="decimal"
+            step="any"
+            min="0.000001"
+            required
+            value={form.rateToBase}
+            onChange={(e) => setField("rateToBase", e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+          />
+        </div>
+      )}
 
       {/* Category */}
       <div>
