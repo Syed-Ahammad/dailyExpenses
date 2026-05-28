@@ -66,6 +66,15 @@ export const budgetInputSchema = z.object({
   warnAtPercent: z.number().int().min(1).max(100).default(80),
 });
 
+/**
+ * Partial update schema for PATCH /api/budgets/:id.
+ * category is intentionally excluded — it is immutable after creation.
+ */
+export const budgetUpdateSchema = budgetInputSchema
+  .pick({ limitMinorBase: true, warnAtPercent: true })
+  .partial();
+
 export type TransactionInput = z.infer<typeof transactionInputSchema>;
 export type TransactionUpdate = z.infer<typeof transactionUpdateSchema>;
 export type BudgetInput = z.infer<typeof budgetInputSchema>;
+export type BudgetUpdate = z.infer<typeof budgetUpdateSchema>;
