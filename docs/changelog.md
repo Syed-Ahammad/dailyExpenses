@@ -12,6 +12,21 @@ Work in progress, not yet released.
 
 ### Added
 
+- **Live FX rates (FR-9)** — `GET /api/rates?from=X&to=Y` fetches the exchange
+  rate via `exchangerate.host`; result is cached in-memory for 1 hour with a
+  24-hour fallback on transient failure. When a user picks a non-base currency
+  in the transaction form, `rateToBase` is pre-filled automatically; if the
+  lookup fails or returns null, the field stays editable for manual entry.
+- **AI category suggestion (FR-19, FR-20)** — `POST /api/categorize` calls
+  Claude Haiku (server-side; key never reaches the client) with the transaction
+  note and returns the best matching category from the canonical list. An
+  "AI suggest ✦" button appears in the form once the note has ≥ 3 characters;
+  the returned suggestion appears as a chip the user can Accept or Dismiss
+  without blocking submission on AI failure.
+- **Category source tracking (FR-21)** — `categorySource` on each transaction
+  records how the category was chosen: `manual` (default), `ai_confirmed`
+  (user accepted an AI suggestion). The field was already in the schema and Zod
+  validator; the form now sets it correctly instead of always sending `manual`.
 - **Rate limiting (NFR-5)** — per-route request caps enforced centrally in
   middleware on `POST`s: sign-in 10/min, sign-up 5/min, reset 5/hour (keyed by
   IP); categorize 20/min, expenses 60/min, budgets 30/min (keyed by userId,

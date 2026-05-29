@@ -14,7 +14,7 @@ The roadmap (`docs/roadmap.md`) is phased; **VAT-aware reporting (phase 5) is th
 
 ## Tech stack
 
-Next.js 14 (App Router, **TypeScript strict**), React, Tailwind, shadcn/ui, Recharts, MongoDB + Mongoose, NextAuth v5 (phase 2), Anthropic Claude **Haiku** for categorization, Vercel + Atlas hosting, Sentry. Node ≥ 18.17. Zod for input validation. Full auth design in `docs/auth.md`, provider choices in `docs/decisions/providers.md`, canonical category list in `docs/categories.md` / `src/lib/categories.ts`.
+Next.js 14 (App Router, **TypeScript strict**), React, Tailwind, shadcn/ui, Recharts, MongoDB + Mongoose, NextAuth v5 (phase 2), OpenAI **gpt-4o-mini** for categorization, Vercel + Atlas hosting, Sentry. Node ≥ 18.17. Zod for input validation. Full auth design in `docs/auth.md`, provider choices in `docs/decisions/providers.md`, canonical category list in `docs/categories.md` / `src/lib/categories.ts`.
 
 ## Commands (once scaffolded)
 
@@ -29,7 +29,7 @@ Deploys are GitHub → Vercel auto-deploy on push to `main`. PR branches get pre
 
 ## Required env vars
 
-`MONGODB_URI`, `ANTHROPIC_API_KEY`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `SENTRY_DSN`. Live in `.env.local` locally and in Vercel project settings for Production. Use a **separate Atlas database for preview/staging**.
+`MONGODB_URI`, `OPENAI_API_KEY`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `SENTRY_DSN`. Live in `.env.local` locally and in Vercel project settings for Production. Use a **separate Atlas database for preview/staging**. Live in `.env.local` locally and in Vercel project settings for Production. Use a **separate Atlas database for preview/staging**.
 
 ## Architectural rules that span files
 
@@ -57,7 +57,7 @@ Budgets relate to transactions by matching `userId + category`; there is no hard
 
 ### Categorization is server-side and rate-limited
 
-`POST /api/categorize` calls Claude Haiku from the server. The Anthropic key must never reach the client. Track `categorySource` on each transaction (`manual` | `ai_suggested` | `ai_confirmed`) so suggestion quality can be measured. If the AI call fails, the entry flow falls back to manual category selection — **the form must never be blocked by an AI failure**.
+`POST /api/categorize` calls OpenAI gpt-4o-mini from the server. The `OPENAI_API_KEY` must never reach the client. Track `categorySource` on each transaction (`manual` | `ai_suggested` | `ai_confirmed`) so suggestion quality can be measured. If the AI call fails, the entry flow falls back to manual category selection — **the form must never be blocked by an AI failure**.
 
 ### Mongoose connection caching
 
@@ -70,7 +70,7 @@ Full target layout is in `docs/folder-structure.md`. Key rules:
 - API endpoints live at `src/app/api/<resource>/route.ts` (and `[id]/route.ts` for item routes). Status codes follow `docs/api-structure.md` (201 on create, 200 elsewhere; errors as `{ "error": "message" }`).
 - Pages live at `src/app/<route>/page.tsx`.
 - React components use PascalCase `.tsx`; non-component files use camelCase/lowercase `.ts`.
-- Business logic and external integrations (Mongo, Anthropic, exchange rates, exports) go in `src/lib/`, not in routes or components.
+- Business logic and external integrations (Mongo, OpenAI, exchange rates, exports) go in `src/lib/`, not in routes or components.
 - Each Mongo collection gets one file under `src/models/`.
 
 ## Requirement IDs

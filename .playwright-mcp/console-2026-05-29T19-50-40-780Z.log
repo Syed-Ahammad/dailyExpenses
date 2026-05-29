@@ -1,0 +1,13 @@
+[     127ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/:0
+[     215ms] [ERROR] Refused to apply style from 'http://localhost:3000/_next/static/css/app/layout.css?v=1780084240854' because its MIME type ('text/html') is not a supported stylesheet MIME type, and strict MIME checking is enabled. @ http://localhost:3000/:0
+[     231ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/chunks/main-app.js?v=1780084240854:0
+[     231ms] [ERROR] Refused to execute script from 'http://localhost:3000/_next/static/chunks/main-app.js?v=1780084240854' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ http://localhost:3000/:0
+[     231ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/chunks/app-pages-internals.js:0
+[     232ms] [ERROR] Refused to execute script from 'http://localhost:3000/_next/static/chunks/app-pages-internals.js' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ http://localhost:3000/:0
+[     326ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
+[  115680ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/:0
+[  115749ms] [ERROR] Refused to apply style from 'http://localhost:3000/_next/static/css/app/layout.css?v=1780084356380' because its MIME type ('text/html') is not a supported stylesheet MIME type, and strict MIME checking is enabled. @ http://localhost:3000/:0
+[  115751ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/chunks/main-app.js?v=1780084356380:0
+[  115752ms] [ERROR] Refused to execute script from 'http://localhost:3000/_next/static/chunks/main-app.js?v=1780084356380' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ http://localhost:3000/:0
+[  115752ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/chunks/app-pages-internals.js:0
+[  115752ms] [ERROR] Refused to execute script from 'http://localhost:3000/_next/static/chunks/app-pages-internals.js' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ http://localhost:3000/:0

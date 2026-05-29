@@ -102,6 +102,17 @@ environment.
 **Revisit if**: never, unless costs blow up. Sentry is one of those
 "boring is good" choices.
 
+## AI categorization — OpenAI gpt-4o-mini
+
+**Choice**: `gpt-4o-mini` via the `openai` npm package.
+
+**Why**: Replaces the original Claude Haiku choice. gpt-4o-mini is fast, cheap,
+and familiar; the categorization task is a simple classification prompt that any
+capable small model handles well.
+
+**Revisit if**: cost per suggestion becomes material, or a smaller on-device
+model becomes viable. Claude Haiku remains a drop-in replacement.
+
 ## Things deliberately not chosen yet
 
 - **Background jobs** (cron, queues): not needed at scaffold. When VAT

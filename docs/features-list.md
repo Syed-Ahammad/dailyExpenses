@@ -34,9 +34,9 @@ Status values: Done, In progress, Planned.
 
 | Feature                              | Status      | Requirement |
 |--------------------------------------|-------------|-------------|
-| Multi-currency entry with live rates | Planned     | FR-9        |
-| AI category suggestion in the form   | Planned     | FR-19, FR-20|
-| Category source tracking             | Planned     | FR-21       |
+| Multi-currency entry with live rates | Done        | FR-9        |
+| AI category suggestion in the form   | Done        | FR-19, FR-20|
+| Category source tracking             | Done        | FR-21       |
 
 ## Phase 4 — Receipts (paid add-on)
 

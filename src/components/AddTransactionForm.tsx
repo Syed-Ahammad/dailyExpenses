@@ -11,7 +11,8 @@
  * Server Component re-runs its data fetches and the totals + recent list update
  * without a full page reload.
  *
- * FR-5 (expense entry), FR-6 (income entry), FR-9 (multi-currency with rateToBase).
+ * FR-5 (expense entry), FR-6 (income entry), FR-9 (multi-currency with rateToBase),
+ * FR-19/FR-20 (AI category suggestion), FR-21 (category source tracking).
  */
 
 import { useState, useCallback } from "react";
@@ -25,6 +26,7 @@ import {
 import { CURRENCIES } from "@/lib/currencies";
 
 type TransactionType = "expense" | "income";
+type CategorySource = "manual" | "ai_suggested" | "ai_confirmed";
 
 type PaymentMethod =
   | "cash"
@@ -51,7 +53,6 @@ function todayIso(): string {
 }
 
 function defaultCategory(type: TransactionType): string {
-  // Default to the first option for the chosen type on reset or type-switch.
   return type === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0];
 }
 
@@ -60,8 +61,6 @@ function initialState(baseCurrency: string): FormState {
     type: "expense",
     amount: "",
     currency: baseCurrency,
-    // rateToBase is always "1" on reset — if the default currency equals baseCurrency,
-    // it stays "1". The user changes it only when recording a foreign-currency entry.
     rateToBase: "1",
     category: defaultCategory("expense"),
     paymentMethod: "",
@@ -89,6 +88,14 @@ export default function AddTransactionForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // FX rate fetch state (FR-9)
+  const [rateFetching, setRateFetching] = useState(false);
+
+  // AI suggestion state (FR-19, FR-20, FR-21)
+  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [categorySource, setCategorySource] = useState<CategorySource>("manual");
+
   // Generic field updater — keeps handlers DRY.
   const setField = useCallback(
     <K extends keyof FormState>(key: K, value: FormState[K]) => {
@@ -98,31 +105,101 @@ export default function AddTransactionForm({
   );
 
   /**
-   * When the user switches type (expense ↔ income), the category list changes
-   * entirely. Reset category to the first option of the new type so the select
-   * never holds a value that belongs to the wrong list.
+   * When the user switches type (expense ↔ income), reset category and clear
+   * any pending AI suggestion since the category list changes entirely.
    */
   function handleTypeChange(newType: TransactionType) {
     setForm((prev) => ({
       ...prev,
       type: newType,
-      category: defaultCategory(newType), // reset category on type change
+      category: defaultCategory(newType),
     }));
+    setAiSuggestion(null);
+    setCategorySource("manual");
   }
 
   /**
-   * When the currency select changes, auto-reset rateToBase to "1" if the
-   * selected currency matches the user's base currency — no conversion needed.
-   * For a foreign currency the user must enter the rate manually (live FX
-   * lookup is Phase 3).
+   * When the currency changes to a foreign currency, auto-fetch the live rate
+   * and pre-fill rateToBase. If the fetch fails or returns null, the field stays
+   * editable for manual entry (FR-9).
    */
-  function handleCurrencyChange(newCurrency: string) {
+  async function handleCurrencyChange(newCurrency: string) {
     setForm((prev) => ({
       ...prev,
       currency: newCurrency,
-      // Snap rateToBase back to "1" when switching back to base currency.
       rateToBase: newCurrency === baseCurrency ? "1" : prev.rateToBase,
     }));
+
+    if (newCurrency !== baseCurrency) {
+      setRateFetching(true);
+      try {
+        const res = await fetch(
+          `/api/rates?from=${encodeURIComponent(newCurrency)}&to=${encodeURIComponent(baseCurrency)}`,
+        );
+        const json = (await res.json()) as { rate: number | null };
+        if (typeof json.rate === "number") {
+          const rate = json.rate;
+          setForm((prev) => ({
+            ...prev,
+            rateToBase: rate.toFixed(6).replace(/\.?0+$/, ""),
+          }));
+        }
+      } catch {
+        // Silently fail — user can enter the rate manually.
+      } finally {
+        setRateFetching(false);
+      }
+    }
+  }
+
+  /**
+   * Request an AI category suggestion for the current note.
+   * Only offered when the note is long enough to be meaningful (≥3 chars).
+   * On failure the form is unblocked — the user's current selection is kept.
+   */
+  async function handleSuggestCategory() {
+    const note = form.note.trim();
+    if (note.length < 3) return;
+
+    setAiLoading(true);
+    setAiSuggestion(null);
+    try {
+      const res = await fetch("/api/categorize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note, type: form.type }),
+      });
+      if (!res.ok) return; // silently fall back to current selection
+      const json = (await res.json()) as { category?: string };
+      if (typeof json.category === "string" && json.category.length > 0) {
+        setAiSuggestion(json.category);
+      }
+    } catch {
+      // Ignore — form must never be blocked by an AI failure.
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  /** Accept the AI suggestion: apply it and mark as ai_confirmed (FR-20, FR-21). */
+  function acceptSuggestion() {
+    if (!aiSuggestion) return;
+    setField("category", aiSuggestion);
+    setCategorySource("ai_confirmed");
+    setAiSuggestion(null);
+  }
+
+  /** Dismiss the suggestion without changing the category. */
+  function dismissSuggestion() {
+    setAiSuggestion(null);
+    setCategorySource("manual");
+  }
+
+  /** Manual category change clears any pending suggestion (FR-21). */
+  function handleCategoryChange(value: string) {
+    setField("category", value);
+    setAiSuggestion(null);
+    setCategorySource("manual");
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -142,7 +219,6 @@ export default function AddTransactionForm({
     }
 
     // Convert major units → integer minor units (NFR-1).
-    // Math.round handles floating-point imprecision (e.g. 50.25 * 100 = 5025).
     const amountMinor = Math.round(amountNum * 100);
 
     const body = {
@@ -155,7 +231,7 @@ export default function AddTransactionForm({
       note: form.note.trim() || undefined,
       isVatable: false,
       vatRate: 0,
-      categorySource: "manual" as const,
+      categorySource,
       occurredAt: form.occurredAt,
     };
 
@@ -168,10 +244,9 @@ export default function AddTransactionForm({
       });
 
       if (res.status === 201) {
-        // Success: reset form and refresh server-side data.
         setForm(initialState(baseCurrency));
-        // router.refresh() re-runs the parent Server Component's data fetches
-        // so totals and the recent transactions list reflect the new entry.
+        setAiSuggestion(null);
+        setCategorySource("manual");
         router.refresh();
       } else {
         const json = (await res.json()) as { error?: string };
@@ -187,10 +262,8 @@ export default function AddTransactionForm({
   const categoryOptions: readonly (ExpenseCategory | IncomeCategory)[] =
     form.type === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
 
-  // rateToBase is only meaningful when the transaction currency differs from
-  // the user's base currency. When they match, force it to "1" and hide the
-  // field to avoid confusion and accidental miscalculation.
   const isForeignCurrency = form.currency !== baseCurrency;
+  const canSuggest = form.note.trim().length >= 3;
 
   return (
     <form
@@ -280,9 +353,7 @@ export default function AddTransactionForm({
         </div>
       </div>
 
-      {/* Rate to base — only shown for foreign currencies (FR-9).
-          When currency === baseCurrency, rateToBase is always 1 (no conversion
-          needed) and the field is hidden to keep the form uncluttered. */}
+      {/* Rate to base — only shown for foreign currencies (FR-9). */}
       {isForeignCurrency && (
         <div>
           <label
@@ -294,33 +365,53 @@ export default function AddTransactionForm({
               (how many {baseCurrency} per 1 {form.currency})
             </span>
           </label>
-          <input
-            id="rateToBase"
-            type="number"
-            inputMode="decimal"
-            step="any"
-            min="0.000001"
-            required
-            value={form.rateToBase}
-            onChange={(e) => setField("rateToBase", e.target.value)}
-            className="w-full rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
-          />
+          <div className="relative">
+            <input
+              id="rateToBase"
+              type="number"
+              inputMode="decimal"
+              step="any"
+              min="0.000001"
+              required
+              value={form.rateToBase}
+              onChange={(e) => setField("rateToBase", e.target.value)}
+              disabled={rateFetching}
+              className="w-full rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft disabled:opacity-60"
+            />
+            {rateFetching && (
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted">
+                Fetching…
+              </span>
+            )}
+          </div>
+          {!rateFetching && form.rateToBase !== "1" && (
+            <p className="mt-1 text-xs text-muted">Live rate pre-filled — edit if needed.</p>
+          )}
         </div>
       )}
 
-      {/* Category */}
+      {/* Category + AI suggest (FR-19, FR-20) */}
       <div>
-        <label
-          htmlFor="category"
-          className="mb-1 block text-sm font-medium text-ink"
-        >
-          Category
-        </label>
+        <div className="mb-1 flex items-center justify-between">
+          <label htmlFor="category" className="text-sm font-medium text-ink">
+            Category
+          </label>
+          {canSuggest && (
+            <button
+              type="button"
+              onClick={handleSuggestCategory}
+              disabled={aiLoading}
+              className="text-xs text-green hover:underline disabled:opacity-50"
+            >
+              {aiLoading ? "Suggesting…" : "AI suggest ✦"}
+            </button>
+          )}
+        </div>
         <select
           id="category"
           required
           value={form.category}
-          onChange={(e) => setField("category", e.target.value)}
+          onChange={(e) => handleCategoryChange(e.target.value)}
           className="w-full rounded-sm border border-sand bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
         >
           {categoryOptions.map((c) => (
@@ -329,6 +420,30 @@ export default function AddTransactionForm({
             </option>
           ))}
         </select>
+
+        {/* AI suggestion chip */}
+        {aiSuggestion !== null && (
+          <div className="mt-2 flex items-center gap-2 rounded-md border border-gold/40 bg-gold/10 px-3 py-2 text-sm">
+            <span className="text-muted">AI suggests:</span>
+            <span className="font-medium text-ink">{aiSuggestion}</span>
+            <div className="ml-auto flex gap-2">
+              <button
+                type="button"
+                onClick={acceptSuggestion}
+                className="rounded px-2 py-0.5 text-xs font-medium text-green hover:underline"
+              >
+                Accept
+              </button>
+              <button
+                type="button"
+                onClick={dismissSuggestion}
+                className="rounded px-2 py-0.5 text-xs text-muted hover:underline"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Payment Method */}

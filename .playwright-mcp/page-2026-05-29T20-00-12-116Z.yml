@@ -1,0 +1,129 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - heading "Dashboard" [level=1] [ref=e5]
+      - paragraph [ref=e6]: All amounts in USD
+    - generic [ref=e7]:
+      - link "Budgets" [ref=e8] [cursor=pointer]:
+        - /url: /budgets
+      - link "Reports" [ref=e9] [cursor=pointer]:
+        - /url: /reports
+      - button "Sign out" [ref=e10] [cursor=pointer]
+  - alert [ref=e11]: Could not connect to the database. Showing empty data — your transactions are safe. Check your MONGODB_URI and try again.
+  - region "Monthly summary" [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - paragraph [ref=e15]: Expense Today
+        - paragraph [ref=e16]: USD 0.00
+      - generic [ref=e17]:
+        - paragraph [ref=e18]: Expense This Week
+        - paragraph [ref=e19]: USD 0.00
+      - generic [ref=e20]:
+        - paragraph [ref=e21]: Expense This Month
+        - paragraph [ref=e22]: USD 0.00
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Income This Month
+        - paragraph [ref=e25]: USD 0.00
+      - generic [ref=e26]:
+        - paragraph [ref=e27]: Balance This Month
+        - paragraph [ref=e28]: USD 0.00
+  - generic [ref=e29]:
+    - generic [ref=e30]:
+      - region "Category breakdown" [ref=e31]:
+        - heading "Spending by Category" [level=2] [ref=e32]
+        - paragraph [ref=e33]: No expenses this month.
+      - region "Recent transactions" [ref=e34]:
+        - heading "Recent Transactions" [level=2] [ref=e35]
+        - paragraph [ref=e36]: No transactions recorded yet.
+    - form "Add transaction" [ref=e38]:
+      - heading "Add Transaction" [level=2] [ref=e39]
+      - group "Type" [ref=e40]:
+        - generic [ref=e41]: Type
+        - generic [ref=e42]:
+          - generic [ref=e43] [cursor=pointer]:
+            - radio "expense" [checked] [ref=e44]
+            - generic [ref=e45]: expense
+          - generic [ref=e46] [cursor=pointer]:
+            - radio "income" [ref=e47]
+            - generic [ref=e48]: income
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]: Amount
+          - spinbutton "Amount" [ref=e52]
+        - generic [ref=e53]:
+          - generic [ref=e54]: Currency
+          - combobox "Currency" [ref=e55]:
+            - option "AED — UAE Dirham"
+            - option "AUD — Australian Dollar"
+            - option "BDT — Bangladeshi Taka"
+            - option "BHD — Bahraini Dinar"
+            - option "BRL — Brazilian Real"
+            - option "CAD — Canadian Dollar"
+            - option "CHF — Swiss Franc"
+            - option "CNY — Chinese Yuan"
+            - option "DKK — Danish Krone"
+            - option "EGP — Egyptian Pound"
+            - option "EUR — Euro"
+            - option "GBP — British Pound Sterling"
+            - option "HKD — Hong Kong Dollar"
+            - option "IDR — Indonesian Rupiah"
+            - option "INR — Indian Rupee"
+            - option "JPY — Japanese Yen"
+            - option "KES — Kenyan Shilling"
+            - option "KRW — South Korean Won"
+            - option "KWD — Kuwaiti Dinar"
+            - option "LKR — Sri Lankan Rupee"
+            - option "MXN — Mexican Peso"
+            - option "MYR — Malaysian Ringgit"
+            - option "NGN — Nigerian Naira"
+            - option "NOK — Norwegian Krone"
+            - option "NZD — New Zealand Dollar"
+            - option "OMR — Omani Rial"
+            - option "PHP — Philippine Peso"
+            - option "PKR — Pakistani Rupee"
+            - option "QAR — Qatari Riyal"
+            - option "SAR — Saudi Riyal"
+            - option "SEK — Swedish Krona"
+            - option "SGD — Singapore Dollar"
+            - option "THB — Thai Baht"
+            - option "TRY — Turkish Lira"
+            - option "USD — US Dollar" [selected]
+            - option "ZAR — South African Rand"
+      - generic [ref=e56]:
+        - generic [ref=e58]: Category
+        - combobox "Category" [ref=e59]:
+          - option "Transport" [selected]
+          - option "Food & Dining"
+          - option "Office Supplies"
+          - option "Software & Subscriptions"
+          - option "Professional Services"
+          - option "Marketing & Advertising"
+          - option "Rent & Utilities"
+          - option "Phone & Internet"
+          - option "Travel"
+          - option "Equipment"
+          - option "Bank Fees"
+          - option "Government & Visa Fees"
+          - option "Education & Training"
+          - option "Healthcare"
+          - option "Insurance"
+          - option "Entertainment"
+          - option "Other"
+      - generic [ref=e60]:
+        - generic [ref=e61]: Payment Method (optional)
+        - combobox "Payment Method (optional)" [ref=e62]:
+          - option "— Select —" [selected]
+          - option "Cash"
+          - option "Card"
+          - option "Bank Transfer"
+          - option "Wallet"
+          - option "Cheque"
+          - option "Other"
+      - generic [ref=e63]:
+        - generic [ref=e64]: Date
+        - textbox "Date" [ref=e65]: 2026-05-29
+      - generic [ref=e66]:
+        - generic [ref=e67]: Note (optional, max 500)
+        - textbox "Note (optional, max 500)" [ref=e68]:
+          - /placeholder: e.g. Lunch with client
+      - button "Save Transaction" [ref=e69] [cursor=pointer]
