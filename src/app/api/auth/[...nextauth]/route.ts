@@ -1,11 +1,4 @@
-// NextAuth handler. Wired up in Phase 2 — for now returns 501.
-// When implementing: replace with `export { GET, POST } from "@/lib/auth";`
-// after auth.ts exports handlers from NextAuth(authConfig).
+// NextAuth route handler (sign-in, sign-out, session, CSRF). Phase 2.
+import { handlers } from "@/lib/auth";
 
-export async function GET() {
-  return Response.json({ error: "not implemented" }, { status: 501 });
-}
-
-export async function POST() {
-  return Response.json({ error: "not implemented" }, { status: 501 });
-}
+export const { GET, POST } = handlers;

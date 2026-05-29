@@ -21,6 +21,7 @@ import { logger } from "@/lib/logger";
 import AddTransactionForm from "@/components/AddTransactionForm";
 import TransactionList from "@/components/TransactionList";
 import type { TransactionView } from "@/components/TransactionList";
+import SignOutButton from "@/components/SignOutButton";
 
 // The dashboard reflects live per-request data, so it must never be statically
 // prerendered. Until auth (which reads the session) makes this implicit, force
@@ -139,12 +140,15 @@ export default async function DashboardPage() {
             All amounts in {baseCurrency}
           </p>
         </div>
-        <Link
-          href="/budgets"
-          className="shrink-0 rounded-pill px-3 py-1.5 text-sm font-medium text-green transition-colors hover:bg-green-soft focus:outline-none focus:ring-2 focus:ring-green-soft"
-        >
-          Manage budgets →
-        </Link>
+        <div className="flex shrink-0 items-center gap-1">
+          <Link
+            href="/budgets"
+            className="rounded-pill px-3 py-1.5 text-sm font-medium text-green transition-colors hover:bg-green-soft focus:outline-none focus:ring-2 focus:ring-green-soft"
+          >
+            Manage budgets →
+          </Link>
+          <SignOutButton />
+        </div>
       </div>
 
       {/* DB error banner — non-blocking, layout still renders */}

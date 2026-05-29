@@ -1,46 +1,77 @@
-// NextAuth configuration + auth seams (getUserId, getUserBaseCurrency).
+// NextAuth (v5) wiring + the per-user auth seams (getUserId, getUserBaseCurrency).
 //
-// Phase 1: both helpers return hardcoded demo values so feature work can
-// proceed without auth wired up. Phase 2 replaces each body with a real
-// session lookup; these helpers are the single auth-on switch.
+// This module runs on the Node runtime (it uses Mongoose + bcrypt in the
+// Credentials authorize callback), so it must NOT be imported by the Edge
+// middleware — the middleware imports the DB-free auth.config.ts instead.
 //
-// See docs/auth.md for the full auth design.
+// getUserId() / getUserBaseCurrency() are the single seam every owned-resource
+// route already calls. Phase 2 swaps their bodies from a hardcoded demo user to
+// the real session — routes are untouched. See docs/auth.md.
 
-import type { NextAuthConfig } from "next-auth";
-import { isSupportedCurrency, DEFAULT_BASE_CURRENCY } from "./currencies";
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { authConfig } from "./auth.config";
+import { connectMongo } from "./mongodb";
+import { signInSchema } from "./validation";
+import { DEFAULT_BASE_CURRENCY } from "./currencies";
+import { UserModel } from "@/models/User";
 
-export const authConfig: NextAuthConfig = {
-  providers: [],
-  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 30 },
-  pages: { signIn: "/sign-in" },
-};
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+  providers: [
+    Credentials({
+      credentials: { email: {}, password: {} },
+      async authorize(credentials) {
+        const parsed = signInSchema.safeParse(credentials);
+        if (!parsed.success) return null;
+        const { email, password } = parsed.data;
 
-const DEMO_USER_ID = "demo-user";
+        await connectMongo();
+        const user = await UserModel.findOne({ email }).lean();
+
+        // Always run a bcrypt compare — even when the user is missing — against a
+        // dummy hash, so response time can't reveal whether an email exists
+        // (timing-based enumeration). docs/auth.md sign-in step 2.
+        const hash = user?.passwordHash ?? DUMMY_HASH;
+        const ok = await bcrypt.compare(password, hash);
+        if (!user || !ok) return null;
+
+        return {
+          id: String(user._id),
+          email: user.email,
+          name: user.name ?? null,
+          baseCurrency: user.baseCurrency,
+        };
+      },
+    }),
+  ],
+});
+
+// A valid bcrypt hash of a random string, used only to equalize timing for the
+// "user not found" path. Never matches a real password.
+const DUMMY_HASH =
+  "$2a$12$C6UzMDM.H6dfI/f/IKcEeO3Z7Vc1l1n1l1n1l1n1l1n1l1n1l1n1u";
 
 /**
- * Returns the current user's id. Every owned-resource API route MUST call
- * this and filter Mongo queries by the returned value. Never trust a
- * client-supplied userId.
+ * Returns the current user's id from the session. Every owned-resource route
+ * MUST call this and filter Mongo queries by the result. Never trust a
+ * client-supplied userId. Throws if there is no session (routes are guarded by
+ * middleware, so this is a defense-in-depth assertion that should not trigger).
  */
 export async function getUserId(): Promise<string> {
-  return DEMO_USER_ID;
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthenticated: no session user id");
+  }
+  return session.user.id;
 }
 
 /**
- * Returns the current user's base currency (ISO 4217 code).
- *
- * Phase 1: reads DEFAULT_BASE_CURRENCY from the environment variable of the
- * same name, validated against the supported-currency list. Falls back to
- * the DEFAULT_BASE_CURRENCY constant from currencies.ts if the env var is
- * absent or holds an unsupported code.
- *
- * Phase 2: replace the body with `user.baseCurrency` from the auth session —
- * this helper is the single seam for per-user base currency.
+ * Returns the current user's base currency (ISO 4217) from the session,
+ * falling back to the app default if somehow absent.
  */
 export async function getUserBaseCurrency(): Promise<string> {
-  const envCode = process.env.DEFAULT_BASE_CURRENCY?.toUpperCase().trim();
-  if (envCode && isSupportedCurrency(envCode)) {
-    return envCode;
-  }
-  return DEFAULT_BASE_CURRENCY;
+  const session = await auth();
+  return session?.user?.baseCurrency ?? DEFAULT_BASE_CURRENCY;
 }

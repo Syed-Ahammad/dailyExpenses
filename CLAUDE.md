@@ -49,7 +49,7 @@ A transaction carries `currency` + `rateToBase` (the rate **at the moment of ent
 
 ### Per-user scoping is enforced server-side
 
-Every user-owned document has a `userId` field and is indexed on it. API routes resolve the current user from the NextAuth session — **never trust a client-supplied user ID**. This rule covers transactions, budgets, and subscriptions. Until NextAuth lands (phase 2), `src/lib/` should expose a `getUserId()` that returns a hardcoded demo user; replacing this helper is the single seam for turning on auth.
+Every user-owned document has a `userId` field and is indexed on it. API routes resolve the current user from the NextAuth session — **never trust a client-supplied user ID**. This rule covers transactions, budgets, and subscriptions. As of phase 2 this is wired: `getUserId()` / `getUserBaseCurrency()` in `src/lib/auth.ts` read the NextAuth session (Credentials provider, JWT strategy). They remain the single seam every owned-resource route calls — routes were not changed when auth landed.
 
 ### Budget ↔ transaction join is by query, not foreign key
 

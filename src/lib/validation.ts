@@ -79,7 +79,42 @@ export const budgetUpdateSchema = budgetInputSchema
   .pick({ limitMinorBase: true, warnAtPercent: true })
   .partial();
 
+// ---------------------------------------------------------------------------
+// Auth (Phase 2) — see docs/auth.md
+// ---------------------------------------------------------------------------
+
+/**
+ * Password rule (docs/auth.md sign-up): min 10 chars, at least one letter and
+ * one digit, no maximum. Shared by sign-up and password reset.
+ */
+const passwordSchema = z
+  .string()
+  .min(10, "Password must be at least 10 characters")
+  .regex(/[A-Za-z]/, "Password must contain a letter")
+  .regex(/[0-9]/, "Password must contain a digit");
+
+/** Email is lowercased + trimmed at the boundary so storage stays canonical. */
+const emailSchema = z.string().trim().toLowerCase().email("Invalid email");
+
+export const signUpSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
+  baseCurrency: z
+    .string()
+    .length(3)
+    .toUpperCase()
+    .refine(isSupportedCurrency, "Unsupported currency"),
+  name: z.string().trim().max(100).optional(),
+});
+
+export const signInSchema = z.object({
+  email: emailSchema,
+  password: z.string().min(1, "Password is required"),
+});
+
 export type TransactionInput = z.infer<typeof transactionInputSchema>;
 export type TransactionUpdate = z.infer<typeof transactionUpdateSchema>;
 export type BudgetInput = z.infer<typeof budgetInputSchema>;
 export type BudgetUpdate = z.infer<typeof budgetUpdateSchema>;
+export type SignUpInput = z.infer<typeof signUpSchema>;
+export type SignInInput = z.infer<typeof signInSchema>;

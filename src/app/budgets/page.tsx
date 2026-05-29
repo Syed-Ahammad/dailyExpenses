@@ -18,6 +18,7 @@ import { BudgetModel } from "@/models/Budget";
 import { logger } from "@/lib/logger";
 import BudgetManager from "@/components/BudgetManager";
 import type { BudgetView } from "@/components/BudgetManager";
+import SignOutButton from "@/components/SignOutButton";
 
 // Budgets and their usage are live per-request data — never statically prerender,
 // so router.refresh() after a mutation always re-fetches (matches the dashboard).
@@ -91,25 +92,28 @@ export default async function BudgetsPage() {
       {/* Page header with cross-navigation back to the dashboard */}
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-[28px] font-semibold tracking-tight text-ink sm:text-[34px]">
             Budgets
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted">
             Monthly limits per category, in {baseCurrency}.
           </p>
         </div>
-        <Link
-          href="/dashboard"
-          className="shrink-0 text-sm font-medium text-slate-600 hover:text-slate-900 hover:underline"
-        >
-          ← Dashboard
-        </Link>
+        <div className="flex shrink-0 items-center gap-1">
+          <Link
+            href="/dashboard"
+            className="rounded-pill px-3 py-1.5 text-sm font-medium text-green transition-colors hover:bg-green-soft focus:outline-none focus:ring-2 focus:ring-green-soft"
+          >
+            ← Dashboard
+          </Link>
+          <SignOutButton />
+        </div>
       </div>
 
       {dbError && (
         <div
           role="alert"
-          className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="mb-6 rounded-md bg-red-bg px-4 py-3 text-sm text-red-ink"
         >
           Could not connect to the database. Showing an empty list — your budgets
           are safe. Check your MONGODB_URI and try again.

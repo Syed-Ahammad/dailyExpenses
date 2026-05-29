@@ -12,6 +12,10 @@
  * minor units with Math.round(major * 100) before POST/PATCH (NFR-1). Division
  * by 100 happens only at the display edge.
  *
+ * Styling follows docs/design-system.md: warm tokens, money figures in the
+ * display serif, and a status-colored usage bar (green → gold → red) plus a
+ * text label so meaning never relies on color alone.
+ *
  * FR-15 (set budget), FR-16 (edit / remove budget).
  */
 
@@ -43,17 +47,18 @@ function formatMoney(minor: number, currency: string): string {
   return `${currency} ${(minor / 100).toFixed(2)}`;
 }
 
-/** Status pill colours mirror the dashboard's warning language. */
+/** Status pill — feedback tokens (amber/red) for near/over; calm sand for ok. */
 const LEVEL_PILL: Record<BudgetLevel, string> = {
-  ok: "bg-slate-100 text-slate-600",
-  near: "bg-amber-100 text-amber-800",
-  over: "bg-red-100 text-red-800",
+  ok: "bg-sand text-muted",
+  near: "bg-amber-bg text-amber-ink",
+  over: "bg-red-bg text-red-ink",
 };
 
+/** Usage-bar fill reflects status: green → gold → red (design-system §8). */
 const LEVEL_BAR: Record<BudgetLevel, string> = {
-  ok: "bg-slate-600",
-  near: "bg-amber-500",
-  over: "bg-red-600",
+  ok: "bg-green",
+  near: "bg-gold",
+  over: "bg-red-ink",
 };
 
 const LEVEL_LABEL: Record<BudgetLevel, string> = {
@@ -217,7 +222,9 @@ export default function BudgetManager({
   }
 
   const inputClass =
-    "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400";
+    "w-full rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft";
+  const primaryBtn =
+    "rounded-md bg-green px-4 py-2.5 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-soft disabled:cursor-not-allowed disabled:opacity-50";
 
   return (
     <div className="space-y-8">
@@ -226,12 +233,12 @@ export default function BudgetManager({
       {/* ---------------------------------------------------------------- */}
       <section
         aria-label="Add budget"
-        className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+        className="rounded-lg border border-sand bg-card p-5 shadow-sm"
       >
-        <h2 className="mb-4 text-lg font-semibold text-slate-800">Add Budget</h2>
+        <h2 className="mb-4 text-lg font-semibold text-ink">Add Budget</h2>
 
         {availableCategories.length === 0 ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted">
             Every expense category already has a budget. Edit or delete one below
             to make changes.
           </p>
@@ -240,7 +247,7 @@ export default function BudgetManager({
             {addError !== null && (
               <p
                 role="alert"
-                className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
+                className="rounded-md bg-red-bg px-4 py-3 text-sm text-red-ink"
               >
                 {addError}
               </p>
@@ -250,7 +257,7 @@ export default function BudgetManager({
               <div className="sm:col-span-1">
                 <label
                   htmlFor="new-category"
-                  className="mb-1 block text-sm font-medium text-slate-700"
+                  className="mb-1 block text-sm font-medium text-ink"
                 >
                   Category
                 </label>
@@ -259,7 +266,7 @@ export default function BudgetManager({
                   required
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className={`${inputClass} bg-white`}
+                  className={`${inputClass} bg-card`}
                 >
                   <option value="">— Select —</option>
                   {availableCategories.map((c) => (
@@ -273,7 +280,7 @@ export default function BudgetManager({
               <div>
                 <label
                   htmlFor="new-limit"
-                  className="mb-1 block text-sm font-medium text-slate-700"
+                  className="mb-1 block text-sm font-medium text-ink"
                 >
                   Monthly limit ({baseCurrency})
                 </label>
@@ -294,7 +301,7 @@ export default function BudgetManager({
               <div>
                 <label
                   htmlFor="new-warn"
-                  className="mb-1 block text-sm font-medium text-slate-700"
+                  className="mb-1 block text-sm font-medium text-ink"
                 >
                   Warn at (%)
                 </label>
@@ -313,11 +320,7 @@ export default function BudgetManager({
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={adding}
-              className="rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
+            <button type="submit" disabled={adding} className={primaryBtn}>
               {adding ? "Saving…" : "Add Budget"}
             </button>
           </form>
@@ -328,21 +331,19 @@ export default function BudgetManager({
       {/* Existing budgets — FR-16 (edit / remove) + live usage            */}
       {/* ---------------------------------------------------------------- */}
       <section aria-label="Existing budgets">
-        <h2 className="mb-3 text-lg font-semibold text-slate-800">
-          Your Budgets
-        </h2>
+        <h2 className="mb-3 text-lg font-semibold text-ink">Your Budgets</h2>
 
         {rowError !== null && (
           <p
             role="alert"
-            className="mb-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="mb-3 rounded-md bg-red-bg px-4 py-3 text-sm text-red-ink"
           >
             {rowError}
           </p>
         )}
 
         {budgets.length === 0 ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted">
             No budgets yet. Add one above to start tracking category spend.
           </p>
         ) : (
@@ -356,16 +357,18 @@ export default function BudgetManager({
               return (
                 <li
                   key={b.id}
-                  className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                  className="rounded-lg border border-sand bg-card p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-medium text-slate-800">{b.category}</p>
+                      <p className="font-medium text-ink">{b.category}</p>
                       {!isEditing && (
-                        <p className="mt-0.5 text-sm text-slate-500">
-                          {formatMoney(b.spent, baseCurrency)} /{" "}
-                          {formatMoney(b.limitMinorBase, baseCurrency)}
-                          <span className="ml-2 text-slate-400">
+                        <p className="mt-0.5 text-sm text-muted">
+                          <span className="font-display tabular-nums text-ink">
+                            {formatMoney(b.spent, baseCurrency)} /{" "}
+                            {formatMoney(b.limitMinorBase, baseCurrency)}
+                          </span>
+                          <span className="ml-2 text-muted">
                             warn at {b.warnAtPercent}%
                           </span>
                         </p>
@@ -374,7 +377,7 @@ export default function BudgetManager({
 
                     {!isEditing && (
                       <span
-                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${LEVEL_PILL[b.level]}`}
+                        className={`shrink-0 rounded-pill px-2.5 py-1 text-xs font-medium ${LEVEL_PILL[b.level]}`}
                       >
                         {b.percent}% · {LEVEL_LABEL[b.level]}
                       </span>
@@ -383,9 +386,9 @@ export default function BudgetManager({
 
                   {/* Usage bar (hidden while editing to reduce clutter) */}
                   {!isEditing && (
-                    <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div className="mt-2 h-2 w-full overflow-hidden rounded-pill bg-sand">
                       <div
-                        className={`h-full rounded-full ${LEVEL_BAR[b.level]}`}
+                        className={`h-full rounded-pill transition-[width] duration-[400ms] ease-out ${LEVEL_BAR[b.level]}`}
                         style={{ width: `${barWidth}%` }}
                       />
                     </div>
@@ -397,7 +400,7 @@ export default function BudgetManager({
                       <div>
                         <label
                           htmlFor={`edit-limit-${b.id}`}
-                          className="mb-1 block text-xs font-medium text-slate-600"
+                          className="mb-1 block text-xs font-medium text-muted"
                         >
                           Limit ({baseCurrency})
                         </label>
@@ -415,7 +418,7 @@ export default function BudgetManager({
                       <div>
                         <label
                           htmlFor={`edit-warn-${b.id}`}
-                          className="mb-1 block text-xs font-medium text-slate-600"
+                          className="mb-1 block text-xs font-medium text-muted"
                         >
                           Warn at (%)
                         </label>
@@ -436,7 +439,7 @@ export default function BudgetManager({
                           type="button"
                           onClick={() => handleSaveEdit(b.id)}
                           disabled={isBusy}
-                          className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="rounded-md bg-green px-3 py-2 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-soft disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {isBusy ? "Saving…" : "Save"}
                         </button>
@@ -444,7 +447,7 @@ export default function BudgetManager({
                           type="button"
                           onClick={cancelEdit}
                           disabled={isBusy}
-                          className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                          className="rounded-md border border-sand px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-paper disabled:opacity-50"
                         >
                           Cancel
                         </button>
@@ -456,7 +459,7 @@ export default function BudgetManager({
                         type="button"
                         onClick={() => startEdit(b)}
                         disabled={isBusy}
-                        className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                        className="rounded-md border border-sand px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-paper disabled:opacity-50"
                       >
                         Edit
                       </button>
@@ -464,7 +467,7 @@ export default function BudgetManager({
                         type="button"
                         onClick={() => handleDelete(b)}
                         disabled={isBusy}
-                        className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50"
+                        className="rounded-md border border-red-bg px-3 py-1.5 text-sm font-medium text-red-ink transition-colors hover:bg-red-bg disabled:opacity-50"
                       >
                         {isBusy ? "…" : "Delete"}
                       </button>

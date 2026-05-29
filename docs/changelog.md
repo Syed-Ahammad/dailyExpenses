@@ -12,6 +12,15 @@ Work in progress, not yet released.
 
 ### Added
 
+- **Authentication (NextAuth v5 Credentials)** — sign up, sign in, sign out
+  with bcrypt hashing and 30-day JWT sessions; base currency chosen at
+  signup (FR-1, FR-2). `getUserId()` / `getUserBaseCurrency()` now resolve
+  the current user from the session — the demo-user seam is gone (FR-3).
+  Middleware protects app pages (redirect) and owned API routes (401) and
+  adds an Origin/CSRF check; security response headers via `next.config`.
+  (Password reset FR-4 + rate limiting still pending.)
+- Dirham design system applied across the dashboard and budgets UI: warm
+  gold-and-green tokens, Fraunces/Spline Sans, mobile-first, reduced-motion.
 - Dashboard core loop: expense/income entry form, daily/weekly/monthly
   totals, income-vs-expense balance, and per-category breakdown
   (FR-5, FR-6, FR-10–FR-14).
