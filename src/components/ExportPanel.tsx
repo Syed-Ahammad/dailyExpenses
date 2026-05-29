@@ -22,9 +22,9 @@ export default function ExportPanel({
 }) {
   const [month, setMonth] = useState(currentMonth());
 
-  function downloadCsv() {
+  function download(format: "csv" | "pdf") {
     if (!month) return;
-    window.location.href = `/api/export?month=${encodeURIComponent(month)}&format=csv`;
+    window.location.href = `/api/export?month=${encodeURIComponent(month)}&format=${format}`;
   }
 
   return (
@@ -32,10 +32,10 @@ export default function ExportPanel({
       aria-label="Export"
       className="rounded-lg border border-sand bg-card p-5 shadow-sm"
     >
-      <h2 className="mb-1 text-lg font-semibold text-ink">Monthly CSV export</h2>
+      <h2 className="mb-1 text-lg font-semibold text-ink">Monthly export</h2>
       <p className="mb-4 text-sm text-muted">
         Download every transaction for a month, with amounts in {baseCurrency}.
-        Ready for an accountant or a spreadsheet.
+        CSV for a spreadsheet, PDF for a printable record.
       </p>
 
       <div className="flex flex-wrap items-end gap-3">
@@ -57,11 +57,20 @@ export default function ExportPanel({
 
         <button
           type="button"
-          onClick={downloadCsv}
+          onClick={() => download("csv")}
           disabled={!month}
           className="rounded-md bg-green px-4 py-2.5 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-soft disabled:cursor-not-allowed disabled:opacity-50"
         >
           Download CSV
+        </button>
+
+        <button
+          type="button"
+          onClick={() => download("pdf")}
+          disabled={!month}
+          className="rounded-md border border-sand px-4 py-2.5 text-sm font-medium text-ink transition-[transform,opacity] hover:bg-paper active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-soft disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Download PDF
         </button>
       </div>
     </section>

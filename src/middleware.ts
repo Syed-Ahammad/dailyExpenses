@@ -6,6 +6,7 @@
 
 import NextAuth from "next-auth";
 import { authConfig } from "@/lib/auth.config";
+import { rateLimitRequest } from "@/lib/rateLimit";
 
 const { auth } = NextAuth(authConfig);
 
@@ -13,13 +14,36 @@ const PROTECTED_PAGES = ["/dashboard", "/budgets", "/reports"];
 const AUTH_PAGES = ["/sign-in", "/sign-up"];
 const STATE_CHANGING = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 
-export default auth((req) => {
+/** Best-effort client IP from proxy headers (Vercel sets x-forwarded-for). */
+function clientIp(req: Request): string {
+  const fwd = req.headers.get("x-forwarded-for");
+  const first = fwd?.split(",")[0]?.trim();
+  return first || req.headers.get("x-real-ip") || "127.0.0.1";
+}
+
+export default auth(async (req) => {
   const { nextUrl } = req;
   const { pathname } = nextUrl;
   const isLoggedIn = !!req.auth;
 
   const isApi = pathname.startsWith("/api/");
   const isAuthApi = pathname.startsWith("/api/auth/");
+
+  // Rate limiting (NFR-5): only POSTs hit the configured rules; the helper
+  // returns allow for any unmatched path. Keyed by userId where we have a
+  // session, else by IP.
+  if (req.method === "POST") {
+    const allowed = await rateLimitRequest(pathname, {
+      ip: clientIp(req),
+      userId: req.auth?.user?.id,
+    });
+    if (!allowed) {
+      return Response.json(
+        { error: "rate limit exceeded" },
+        { status: 429 },
+      );
+    }
+  }
 
   // CSRF: reject state-changing app-API requests whose Origin doesn't match the
   // host. A missing Origin (non-browser clients) is allowed; NextAuth's own

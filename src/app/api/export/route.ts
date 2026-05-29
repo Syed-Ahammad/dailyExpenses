@@ -4,7 +4,7 @@
 
 import { NextRequest } from "next/server";
 import { getUserId } from "@/lib/auth";
-import { exportMonthlyCsv, monthRangeUtc } from "@/lib/export";
+import { exportMonthlyCsv, exportMonthlyPdf, monthRangeUtc } from "@/lib/export";
 import { logger } from "@/lib/logger";
 
 /** Current month as YYYY-MM (UTC) — used when no month is supplied. */
@@ -19,15 +19,9 @@ export async function GET(request: NextRequest) {
     const format = (searchParams.get("format") ?? "csv").toLowerCase();
     const month = searchParams.get("month") ?? currentMonthUtc();
 
-    if (format === "pdf") {
+    if (format !== "csv" && format !== "pdf") {
       return Response.json(
-        { error: "PDF export is not available yet" },
-        { status: 501 },
-      );
-    }
-    if (format !== "csv") {
-      return Response.json(
-        { error: "Unsupported format (use csv)" },
+        { error: "Unsupported format (use csv or pdf)" },
         { status: 400 },
       );
     }
@@ -39,8 +33,20 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = await getUserId();
-    const csv = await exportMonthlyCsv(userId, month);
 
+    if (format === "pdf") {
+      const pdf = await exportMonthlyPdf(userId, month);
+      // Copy into a plain ArrayBuffer-backed view so it satisfies BodyInit.
+      return new Response(new Uint8Array(pdf), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="expenses-${month}.pdf"`,
+        },
+      });
+    }
+
+    const csv = await exportMonthlyCsv(userId, month);
     return new Response(csv, {
       status: 200,
       headers: {

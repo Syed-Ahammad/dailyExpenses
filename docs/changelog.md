@@ -12,10 +12,19 @@ Work in progress, not yet released.
 
 ### Added
 
-- **CSV export (FR-22)** — `GET /api/export?month=YYYY-MM&format=csv` downloads
-  a month's transactions (RFC-4180 escaped), with each row in its original
-  currency and the base-currency equivalent; a `/reports` page with a month
-  picker drives it. `format=pdf` (FR-23) returns 501 for now.
+- **Rate limiting (NFR-5)** — per-route request caps enforced centrally in
+  middleware on `POST`s: sign-in 10/min, sign-up 5/min, reset 5/hour (keyed by
+  IP); categorize 20/min, expenses 60/min, budgets 30/min (keyed by userId,
+  else IP). Over-limit returns `429 {"error":"rate limit exceeded"}`. Backed by
+  Upstash Redis sliding-window when `UPSTASH_REDIS_REST_URL`/`_TOKEN` are set;
+  falls back to an in-memory limiter (dev only, warns once) otherwise. Fails
+  open if the limiter errors. Reset is keyed by IP only (middleware can't read
+  the body for per-email keying).
+- **CSV & PDF export (FR-22, FR-23)** — `GET /api/export?month=YYYY-MM&format=csv|pdf`
+  downloads a month's transactions. CSV is RFC-4180 escaped; PDF (via `pdf-lib`)
+  is a readable report with income/expense/balance totals and a paginated table.
+  Both show each row in its original currency and the base-currency equivalent;
+  a `/reports` page with a month picker drives both.
 - **Authentication (NextAuth v5 Credentials)** — sign up, sign in, sign out
   with bcrypt hashing and 30-day JWT sessions; base currency chosen at
   signup (FR-1, FR-2). `getUserId()` / `getUserBaseCurrency()` now resolve
