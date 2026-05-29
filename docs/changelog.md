@@ -18,8 +18,12 @@ Work in progress, not yet released.
   the current user from the session — the demo-user seam is gone (FR-3).
   Middleware protects app pages (redirect) and owned API routes (401) and
   adds an Origin/CSRF check; security response headers via `next.config`.
-  (Password reset FR-4 + rate limiting still pending.)
-- Dirham design system applied across the dashboard and budgets UI: warm
+- **Password reset (FR-4)** — `/forgot-password` request + `/reset` confirm
+  flow with single-use, 1-hour SHA-256-hashed tokens (enumeration-safe;
+  reused/expired/invalid tokens rejected). Emails via Resend, with a
+  dev-only fallback that logs the link when `RESEND_API_KEY` is unset.
+  (Rate limiting still pending — needs Upstash.)
+- Daily Expenses design system applied across the dashboard and budgets UI: warm
   gold-and-green tokens, Fraunces/Spline Sans, mobile-first, reduced-motion.
 - Dashboard core loop: expense/income entry form, daily/weekly/monthly
   totals, income-vs-expense balance, and per-category breakdown

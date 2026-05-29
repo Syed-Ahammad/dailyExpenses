@@ -1,4 +1,4 @@
-# Dirham
+# Daily Expenses
 
 A subscription web app for UAE freelancers and small businesses to record expenses and income, stay within per-category budgets, and produce VAT-aware monthly records for an accountant.
 

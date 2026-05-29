@@ -112,9 +112,18 @@ export const signInSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+export const resetRequestSchema = z.object({ email: emailSchema });
+
+export const resetConfirmSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+  newPassword: passwordSchema,
+});
+
 export type TransactionInput = z.infer<typeof transactionInputSchema>;
 export type TransactionUpdate = z.infer<typeof transactionUpdateSchema>;
 export type BudgetInput = z.infer<typeof budgetInputSchema>;
 export type BudgetUpdate = z.infer<typeof budgetUpdateSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
+export type ResetRequestInput = z.infer<typeof resetRequestSchema>;
+export type ResetConfirmInput = z.infer<typeof resetConfirmSchema>;

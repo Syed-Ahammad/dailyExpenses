@@ -18,7 +18,7 @@ const splineSans = Spline_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Dirham",
+  title: "Daily Expenses",
   description: "Expense tracking for UAE freelancers and small businesses.",
 };
 

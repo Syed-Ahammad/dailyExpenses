@@ -1,6 +1,6 @@
 # Design System
 
-The visual and interaction design for Dirham. This is the reference for
+The visual and interaction design for Daily Expenses. This is the reference for
 every screen: the aesthetic direction, the design tokens, motion rules,
 and the responsive and accessibility standards. Mobile is the priority
 platform — read Section 7 before building any layout.

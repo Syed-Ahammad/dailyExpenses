@@ -1,12 +1,12 @@
 ---
-name: frontend-design-system
+name: daily-expenses-design-system
 description: >-
   Use when building, styling, or restyling ANY UI, page, or React component in
-  the Dirham / Multi-Currency app — any front-end or visual work. Triggers on
+  the Daily Expenses app — any front-end or visual work. Triggers on
   requests like "style this page", "build the <X> component", "make the
   dashboard match the design", "apply the design system", "restyle this", "add
   the entry-form UI", or any task touching layout, colors, typography, Tailwind
-  classes, spacing, animation, or component look-and-feel. Encodes the Dirham
+  classes, spacing, animation, or component look-and-feel. Encodes the Daily Expenses
   visual language — a warm gold-and-green Gulf finance aesthetic — as design
   tokens, mobile-first layout rules, motion, accessibility, and component
   patterns, plus how to wire them into this Next.js 14 + Tailwind v3 stack.

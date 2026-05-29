@@ -3,7 +3,7 @@
 /**
  * Sign-up page (FR-1). Creates the account via /api/auth/sign-up, then signs the
  * user in (same session path as sign-in) and navigates to the dashboard. Base
- * currency is chosen here and fixed for now (docs/auth.md). Dirham design system.
+ * currency is chosen here and fixed for now (docs/auth.md). Daily Expenses design system.
  */
 
 import { useState } from "react";
@@ -62,7 +62,7 @@ export default function SignUpPage() {
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
       <div className="mb-6 text-center">
         <h1 className="text-[28px] font-semibold tracking-tight text-ink">
-          Dir<span className="text-gold">ham</span>
+          Daily <span className="text-gold">Expenses</span>
         </h1>
         <p className="mt-1 text-sm text-muted">Create your account</p>
       </div>

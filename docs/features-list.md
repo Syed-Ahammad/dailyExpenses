@@ -21,7 +21,7 @@ Status values: Done, In progress, Planned.
 |--------------------------------------|-------------|-------------|
 | Sign up / sign in / sign out         | Done        | FR-1, FR-2  |
 | Per-user data scoping                | Done        | FR-3        |
-| Password reset                       | Planned     | FR-4        |
+| Password reset                       | Done        | FR-4        |
 | Edit transaction                     | Done        | FR-7        |
 | Delete transaction                   | Done        | FR-8        |
 | Budget create / edit / remove        | Done        | FR-15, FR-16|

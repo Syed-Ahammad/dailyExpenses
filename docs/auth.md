@@ -1,6 +1,6 @@
 # Authentication & Authorization
 
-How Dirham handles sign-up, sign-in, sessions, password reset, and
+How Daily Expenses handles sign-up, sign-in, sessions, password reset, and
 per-user data isolation. Implemented in **phase 2**; this document is
 the spec the implementation must match.
 

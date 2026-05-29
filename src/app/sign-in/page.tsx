@@ -3,7 +3,7 @@
 /**
  * Sign-in page (FR-2). Calls NextAuth's Credentials provider client-side with
  * redirect:false so we can surface a friendly error, then navigates to the
- * dashboard on success. Styled with the Dirham design system.
+ * dashboard on success. Styled with the Daily Expenses design system.
  */
 
 import { useState } from "react";
@@ -48,7 +48,7 @@ export default function SignInPage() {
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
       <div className="mb-6 text-center">
         <h1 className="text-[28px] font-semibold tracking-tight text-ink">
-          Dir<span className="text-gold">ham</span>
+          Daily <span className="text-gold">Expenses</span>
         </h1>
         <p className="mt-1 text-sm text-muted">Sign in to your account</p>
       </div>
@@ -110,6 +110,15 @@ export default function SignInPage() {
         >
           {submitting ? "Signing in…" : "Sign In"}
         </button>
+
+        <p className="text-center text-sm">
+          <Link
+            href="/forgot-password"
+            className="font-medium text-muted hover:text-ink hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </p>
       </form>
 
       <p className="mt-4 text-center text-sm text-muted">
