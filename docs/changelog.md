@@ -12,6 +12,10 @@ Work in progress, not yet released.
 
 ### Added
 
+- **CSV export (FR-22)** — `GET /api/export?month=YYYY-MM&format=csv` downloads
+  a month's transactions (RFC-4180 escaped), with each row in its original
+  currency and the base-currency equivalent; a `/reports` page with a month
+  picker drives it. `format=pdf` (FR-23) returns 501 for now.
 - **Authentication (NextAuth v5 Credentials)** — sign up, sign in, sign out
   with bcrypt hashing and 30-day JWT sessions; base currency chosen at
   signup (FR-1, FR-2). `getUserId()` / `getUserBaseCurrency()` now resolve

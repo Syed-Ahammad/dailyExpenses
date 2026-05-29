@@ -145,7 +145,13 @@ export default async function DashboardPage() {
             href="/budgets"
             className="rounded-pill px-3 py-1.5 text-sm font-medium text-green transition-colors hover:bg-green-soft focus:outline-none focus:ring-2 focus:ring-green-soft"
           >
-            Manage budgets →
+            Budgets
+          </Link>
+          <Link
+            href="/reports"
+            className="rounded-pill px-3 py-1.5 text-sm font-medium text-green transition-colors hover:bg-green-soft focus:outline-none focus:ring-2 focus:ring-green-soft"
+          >
+            Reports
           </Link>
           <SignOutButton />
         </div>

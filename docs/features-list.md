@@ -27,7 +27,7 @@ Status values: Done, In progress, Planned.
 | Budget create / edit / remove        | Done        | FR-15, FR-16|
 | Budget warning at threshold          | Done        | FR-17       |
 | Over-limit alert                     | Done        | FR-18       |
-| CSV export                           | Planned     | FR-22       |
+| CSV export                           | Done        | FR-22       |
 | PDF export                           | Planned     | FR-23       |
 
 ## Phase 3 — Currency and AI
