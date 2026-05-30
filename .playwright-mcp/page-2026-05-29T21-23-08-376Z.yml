@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Daily Expenses" [level=1] [ref=e4]
+      - paragraph [ref=e5]: Sign in to your account
+    - form "Sign in" [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: Email
+        - textbox "Email" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e11]: Password
+        - textbox "Password" [ref=e12]
+      - button "Sign In" [ref=e13] [cursor=pointer]
+      - paragraph [ref=e14]:
+        - link "Forgot password?" [ref=e15] [cursor=pointer]:
+          - /url: /forgot-password
+    - paragraph [ref=e16]:
+      - text: Don't have an account?
+      - link "Sign up" [ref=e17] [cursor=pointer]:
+        - /url: /sign-up
+  - alert [ref=e18]

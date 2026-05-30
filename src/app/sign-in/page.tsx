@@ -12,7 +12,10 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 const inputClass =
-  "w-full rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft";
+  "w-full rounded-md border border-sand bg-card px-3 py-2.5 text-sm text-ink " +
+  "placeholder:text-muted transition-colors " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-green-soft " +
+  "disabled:bg-paper disabled:text-muted disabled:cursor-not-allowed";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -45,88 +48,96 @@ export default function SignInPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
-      <div className="mb-6 text-center">
-        <h1 className="text-[28px] font-semibold tracking-tight text-ink">
-          Daily <span className="text-gold">Expenses</span>
-        </h1>
-        <p className="mt-1 text-sm text-muted">Sign in to your account</p>
-      </div>
-
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4 rounded-lg border border-sand bg-card p-6 shadow-sm"
-        aria-label="Sign in"
-      >
-        {error !== null && (
-          <p
-            role="alert"
-            className="rounded-md bg-red-bg px-4 py-3 text-sm text-red-ink"
-          >
-            {error}
-          </p>
-        )}
-
-        <div>
-          <label
-            htmlFor="email"
-            className="mb-1 block text-sm font-medium text-ink"
-          >
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputClass}
-          />
+    <main className="flex min-h-dvh flex-col items-center justify-center overflow-y-auto bg-paper px-4 py-8">
+      <div className="w-full max-w-sm">
+        {/* Brand */}
+        <div className="mb-8 text-center">
+          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-md bg-green font-display text-lg font-bold text-card">
+            D
+          </div>
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+            Daily <span className="text-gold">Expenses</span>
+          </h1>
+          <p className="mt-1 text-sm text-muted">Sign in to your account</p>
         </div>
 
-        <div>
-          <label
-            htmlFor="password"
-            className="mb-1 block text-sm font-medium text-ink"
-          >
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-md bg-green px-4 py-2.5 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-soft disabled:cursor-not-allowed disabled:opacity-50"
+        {/* Form card */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 rounded-lg border border-sand bg-card p-7 shadow-md"
+          aria-label="Sign in"
         >
-          {submitting ? "Signing in…" : "Sign In"}
-        </button>
+          {error !== null && (
+            <p
+              role="alert"
+              className="rounded-md bg-red-bg px-3 py-2.5 text-sm text-red-ink"
+            >
+              {error}
+            </p>
+          )}
 
-        <p className="text-center text-sm">
-          <Link
-            href="/forgot-password"
-            className="font-medium text-muted hover:text-ink hover:underline"
+          <div className="space-y-1.5">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-ink"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              disabled={submitting}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-baseline justify-between">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-ink"
+              >
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-muted hover:text-ink hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              disabled={submitting}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-md bg-green px-4 py-2.5 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-soft focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Forgot password?
+            {submitting ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+
+        <p className="mt-5 text-center text-sm text-muted">
+          Don&apos;t have an account?{" "}
+          <Link href="/sign-up" className="font-medium text-green hover:underline">
+            Create one
           </Link>
         </p>
-      </form>
-
-      <p className="mt-4 text-center text-sm text-muted">
-        Don&apos;t have an account?{" "}
-        <Link href="/sign-up" className="font-medium text-green hover:underline">
-          Sign up
-        </Link>
-      </p>
+      </div>
     </main>
   );
 }

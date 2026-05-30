@@ -13,7 +13,10 @@ import { signIn } from "next-auth/react";
 import { CURRENCIES, DEFAULT_BASE_CURRENCY } from "@/lib/currencies";
 
 const inputClass =
-  "w-full rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft";
+  "w-full rounded-md border border-sand bg-card px-3 py-2.5 text-sm text-ink " +
+  "placeholder:text-muted transition-colors " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-green-soft " +
+  "disabled:bg-paper disabled:text-muted disabled:cursor-not-allowed";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -59,105 +62,118 @@ export default function SignUpPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
-      <div className="mb-6 text-center">
-        <h1 className="text-[28px] font-semibold tracking-tight text-ink">
-          Daily <span className="text-gold">Expenses</span>
-        </h1>
-        <p className="mt-1 text-sm text-muted">Create your account</p>
-      </div>
-
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4 rounded-lg border border-sand bg-card p-6 shadow-sm"
-        aria-label="Sign up"
-      >
-        {error !== null && (
-          <p
-            role="alert"
-            className="rounded-md bg-red-bg px-4 py-3 text-sm text-red-ink"
-          >
-            {error}
-          </p>
-        )}
-
-        <div>
-          <label
-            htmlFor="email"
-            className="mb-1 block text-sm font-medium text-ink"
-          >
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputClass}
-          />
+    <main className="flex min-h-dvh flex-col items-center justify-center overflow-y-auto bg-paper px-4 py-8">
+      <div className="w-full max-w-sm">
+        {/* Brand */}
+        <div className="mb-8 text-center">
+          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-md bg-green font-display text-lg font-bold text-card">
+            D
+          </div>
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+            Daily <span className="text-gold">Expenses</span>
+          </h1>
+          <p className="mt-1 text-sm text-muted">Create your account</p>
         </div>
 
-        <div>
-          <label
-            htmlFor="password"
-            className="mb-1 block text-sm font-medium text-ink"
-          >
-            Password{" "}
-            <span className="font-normal text-muted">
-              (min 10 chars, a letter and a digit)
-            </span>
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="baseCurrency"
-            className="mb-1 block text-sm font-medium text-ink"
-          >
-            Base currency{" "}
-            <span className="font-normal text-muted">(fixed after signup)</span>
-          </label>
-          <select
-            id="baseCurrency"
-            required
-            value={baseCurrency}
-            onChange={(e) => setBaseCurrency(e.target.value)}
-            className={`${inputClass} bg-card`}
-          >
-            {CURRENCIES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.code} — {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-md bg-green px-4 py-2.5 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-soft disabled:cursor-not-allowed disabled:opacity-50"
+        {/* Form card */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 rounded-lg border border-sand bg-card p-7 shadow-md"
+          aria-label="Sign up"
         >
-          {submitting ? "Creating account…" : "Create Account"}
-        </button>
-      </form>
+          {error !== null && (
+            <p
+              role="alert"
+              className="rounded-md bg-red-bg px-3 py-2.5 text-sm text-red-ink"
+            >
+              {error}
+            </p>
+          )}
 
-      <p className="mt-4 text-center text-sm text-muted">
-        Already have an account?{" "}
-        <Link href="/sign-in" className="font-medium text-green hover:underline">
-          Sign in
-        </Link>
-      </p>
+          <div className="space-y-1.5">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-ink"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              disabled={submitting}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-ink"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              disabled={submitting}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={inputClass}
+            />
+            <p className="text-xs text-muted">
+              Min 10 characters, at least one letter and one digit.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="baseCurrency"
+              className="block text-sm font-medium text-ink"
+            >
+              Base currency
+            </label>
+            <select
+              id="baseCurrency"
+              required
+              disabled={submitting}
+              value={baseCurrency}
+              onChange={(e) => setBaseCurrency(e.target.value)}
+              className={`${inputClass} bg-card`}
+            >
+              {CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code} — {c.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-muted">Cannot be changed after signup.</p>
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-md bg-green px-4 py-2.5 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-soft focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {submitting ? "Creating account…" : "Create account"}
+          </button>
+        </form>
+
+        <p className="mt-5 text-center text-sm text-muted">
+          Already have an account?{" "}
+          <Link
+            href="/sign-in"
+            className="font-medium text-green hover:underline"
+          >
+            Sign in
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }

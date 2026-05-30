@@ -27,7 +27,20 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3004/_next/static/chunks/app/dashboard/page.js\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3004/dashboard\")",
       "Bash(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 1 http://localhost:__TRACKED_VAR__/_next/static/chunks/app/dashboard/page.js)",
-      "Bash(awk '{print $2}')"
+      "Bash(awk '{print $2}')",
+      "Bash(node *)",
+      "Bash(npx tsc *)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"node.*next\")",
+      "Bash(curl *)",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_fill_form",
+      "mcp__context7__resolve-library-id",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__context7__query-docs",
+      "Bash(npx next *)",
+      "Bash(Start-Sleep -Seconds 5)",
+      "Bash(Get-Content \"C:\\\\Users\\\\syed_\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--dailyExpenses\\\\0197d12c-fb86-4cff-a0f5-34a2075d7646\\\\tasks\\\\bym5qz77w.output\")"
     ]
   }
 }

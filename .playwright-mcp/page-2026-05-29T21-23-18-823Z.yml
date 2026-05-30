@@ -1,0 +1,55 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - heading "Daily Expenses" [level=1] [ref=e4]
+    - paragraph [ref=e5]: Create your account
+  - form "Sign up" [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: Email
+      - textbox "Email" [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: Password (min 10 chars, a letter and a digit)
+      - textbox "Password (min 10 chars, a letter and a digit)" [ref=e12]
+    - generic [ref=e13]:
+      - generic [ref=e14]: Base currency (fixed after signup)
+      - combobox "Base currency (fixed after signup)" [ref=e15]:
+        - option "AED — UAE Dirham"
+        - option "AUD — Australian Dollar"
+        - option "BDT — Bangladeshi Taka"
+        - option "BHD — Bahraini Dinar"
+        - option "BRL — Brazilian Real"
+        - option "CAD — Canadian Dollar"
+        - option "CHF — Swiss Franc"
+        - option "CNY — Chinese Yuan"
+        - option "DKK — Danish Krone"
+        - option "EGP — Egyptian Pound"
+        - option "EUR — Euro"
+        - option "GBP — British Pound Sterling"
+        - option "HKD — Hong Kong Dollar"
+        - option "IDR — Indonesian Rupiah"
+        - option "INR — Indian Rupee"
+        - option "JPY — Japanese Yen"
+        - option "KES — Kenyan Shilling"
+        - option "KRW — South Korean Won"
+        - option "KWD — Kuwaiti Dinar"
+        - option "LKR — Sri Lankan Rupee"
+        - option "MXN — Mexican Peso"
+        - option "MYR — Malaysian Ringgit"
+        - option "NGN — Nigerian Naira"
+        - option "NOK — Norwegian Krone"
+        - option "NZD — New Zealand Dollar"
+        - option "OMR — Omani Rial"
+        - option "PHP — Philippine Peso"
+        - option "PKR — Pakistani Rupee"
+        - option "QAR — Qatari Riyal"
+        - option "SAR — Saudi Riyal"
+        - option "SEK — Swedish Krona"
+        - option "SGD — Singapore Dollar"
+        - option "THB — Thai Baht"
+        - option "TRY — Turkish Lira"
+        - option "USD — US Dollar" [selected]
+        - option "ZAR — South African Rand"
+    - button "Create Account" [ref=e16] [cursor=pointer]
+  - paragraph [ref=e17]:
+    - text: Already have an account?
+    - link "Sign in" [ref=e18] [cursor=pointer]:
+      - /url: /sign-in

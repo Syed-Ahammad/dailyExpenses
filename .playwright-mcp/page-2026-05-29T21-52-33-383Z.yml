@@ -1,0 +1,46 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - heading "Budgets" [level=1] [ref=e5]
+      - paragraph [ref=e6]: Monthly limits per category, in USD.
+    - generic [ref=e7]:
+      - link "← Dashboard" [ref=e8] [cursor=pointer]:
+        - /url: /dashboard
+      - button "Sign out" [ref=e9] [cursor=pointer]
+  - alert [ref=e10]: Could not connect to the database. Showing an empty list — your budgets are safe. Check your MONGODB_URI and try again.
+  - generic [ref=e11]:
+    - region "Add budget" [ref=e12]:
+      - heading "Add Budget" [level=2] [ref=e13]
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - generic [ref=e16]:
+            - generic [ref=e17]: Category
+            - combobox "Category" [ref=e18]:
+              - option "— Select —" [selected]
+              - option "Transport"
+              - option "Food & Dining"
+              - option "Office Supplies"
+              - option "Software & Subscriptions"
+              - option "Professional Services"
+              - option "Marketing & Advertising"
+              - option "Rent & Utilities"
+              - option "Phone & Internet"
+              - option "Travel"
+              - option "Equipment"
+              - option "Bank Fees"
+              - option "Government & Visa Fees"
+              - option "Education & Training"
+              - option "Healthcare"
+              - option "Insurance"
+              - option "Entertainment"
+              - option "Other"
+          - generic [ref=e19]:
+            - generic [ref=e20]: Monthly limit (USD)
+            - spinbutton "Monthly limit (USD)" [ref=e21]
+          - generic [ref=e22]:
+            - generic [ref=e23]: Warn at (%)
+            - spinbutton "Warn at (%)" [ref=e24]: "80"
+        - button "Add Budget" [ref=e25] [cursor=pointer]
+    - region "Existing budgets" [ref=e26]:
+      - heading "Your Budgets" [level=2] [ref=e27]
+      - paragraph [ref=e28]: No budgets yet. Add one above to start tracking category spend.

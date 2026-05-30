@@ -20,6 +20,28 @@ const nextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  webpack(config, { isServer }) {
+    if (isServer) {
+      // Prevent webpack from polyfilling Node.js built-ins used by mongoose/dns.
+      // Without this, `import dns from "dns"` may resolve to a browser stub that
+      // ignores dns.setServers() calls, breaking mongodb+srv:// SRV lookups.
+      const externals = Array.isArray(config.externals)
+        ? config.externals
+        : config.externals
+          ? [config.externals]
+          : [];
+      config.externals = [
+        ...externals,
+        ({ request }, callback) => {
+          if (["dns", "net", "tls"].includes(request)) {
+            return callback(null, `commonjs ${request}`);
+          }
+          callback();
+        },
+      ];
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
