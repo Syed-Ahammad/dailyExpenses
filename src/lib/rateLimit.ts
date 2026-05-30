@@ -13,7 +13,9 @@ type RuleName =
   | "reset"
   | "categorize"
   | "expenses"
-  | "budgets";
+  | "budgets"
+  | "receiptsUpload"
+  | "receiptsOcr";
 
 // limit = max requests per window; window in seconds. Mirrors docs/auth.md.
 const RULES: Record<RuleName, { limit: number; window: number }> = {
@@ -23,6 +25,10 @@ const RULES: Record<RuleName, { limit: number; window: number }> = {
   categorize: { limit: 20, window: 60 },
   expenses: { limit: 60, window: 60 },
   budgets: { limit: 30, window: 60 },
+  // Receipt uploads + OCR each have real per-call cost (Cloudinary bandwidth,
+  // Textract dollars), so they sit lower than expenses on purpose.
+  receiptsUpload: { limit: 30, window: 60 },
+  receiptsOcr: { limit: 15, window: 60 },
 };
 
 const upstashConfigured =
@@ -128,6 +134,12 @@ export async function rateLimitRequest(
   }
   if (pathname === "/api/budgets") {
     return rateLimitAllow("budgets", userId ?? ip);
+  }
+  if (pathname === "/api/receipts/upload") {
+    return rateLimitAllow("receiptsUpload", userId ?? ip);
+  }
+  if (pathname === "/api/receipts/ocr") {
+    return rateLimitAllow("receiptsOcr", userId ?? ip);
   }
   return true;
 }

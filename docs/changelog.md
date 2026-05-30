@@ -12,6 +12,20 @@ Work in progress, not yet released.
 
 ### Added
 
+- **Receipt upload (FR-25)** — `POST /api/receipts/upload` accepts a multipart
+  `file` (JPEG/PNG/WEBP image or PDF, ≤ 5 MB), streams it to Cloudinary under
+  a per-user folder, and returns `{ url }`. The transaction form lets users
+  attach a receipt before saving; the recent-transactions list adds an
+  "Attach" action so existing rows can be backfilled. Rate-limited per user
+  (`receiptsUpload`, 30/min). Cloudinary chosen for storage — see
+  `docs/decisions/providers.md`.
+- **Receipt OCR (FR-26)** — `POST /api/receipts/ocr` calls AWS Textract
+  `AnalyzeExpense` on a receipt we just stored (URLs outside our Cloudinary
+  host are refused) and returns `{ amountMinor?, currency?, merchant?,
+  occurredAt? }`. An "Extract from receipt ✦" button in the entry form
+  pre-fills any field the user hasn't touched. OCR failure resolves to `{}`
+  so the form is never blocked. Tighter rate limit (`receiptsOcr`, 15/min)
+  because each call has a Textract per-page cost.
 - **Live FX rates (FR-9)** — `GET /api/rates?from=X&to=Y` fetches the exchange
   rate via `exchangerate.host`; result is cached in-memory for 1 hour with a
   24-hour fallback on transient failure. When a user picks a non-base currency

@@ -45,6 +45,31 @@ free-tier OCR is added.
 or Textract's Arabic accuracy is insufficient. Candidates: Google
 Document AI, Azure Document Intelligence.
 
+## Receipt storage — Cloudinary
+
+**Choice**: Cloudinary (`cloudinary` npm package).
+
+**Why**: Generous free tier (25 GB storage + 25 GB monthly bandwidth) covers
+launch comfortably, built-in image transforms remove the need for a thumbnail
+pipeline, and the SDK works without IAM setup. Used by the phase 4 receipt
+upload flow; the stored `secure_url` is what `transactions.receiptUrl` points
+at.
+
+**Upload mode**: server-side signed upload via `cloudinary.uploader.upload`.
+The file is sent from the browser to `POST /api/receipts/upload` (multipart),
+then the route streams the bytes to Cloudinary so the API secret never reaches
+the client. Folder: `CLOUDINARY_RECEIPTS_FOLDER` (defaults to
+`daily-expenses/receipts`).
+
+**OCR integration**: `POST /api/receipts/ocr` accepts a Cloudinary URL we just
+returned, refuses any other host, and fetches the bytes server-side to pass
+into Textract. We never accept arbitrary URLs as OCR input.
+
+**Revisit if**: free tier limits start biting (>25 GB storage or bandwidth),
+or per-image transformations become a paid line item. Candidates: AWS S3
+(pair naturally with Textract via `S3Object` input, cheaper at scale,
+requires our own thumbnail step) or UploadThing.
+
 ## Billing — Stripe
 
 **Choice**: Stripe (`stripe` npm package).

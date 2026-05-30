@@ -16,10 +16,11 @@
  * Styling follows docs/design-system.md: money figures in the display serif,
  * expense in ink and income in green (never color alone — also a +/− sign).
  *
- * FR-7 (edit transaction), FR-8 (delete transaction).
+ * FR-7 (edit transaction), FR-8 (delete transaction),
+ * FR-25 (attach receipt to existing transaction).
  */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   EXPENSE_CATEGORIES,
@@ -33,6 +34,8 @@ export interface TransactionView {
   currency: string;
   category: string;
   note: string;
+  /** Cloudinary URL if a receipt is attached, otherwise null (FR-25). */
+  receiptUrl: string | null;
   occurredAt: string; // ISO string
 }
 
@@ -61,6 +64,60 @@ export default function TransactionList({
   const [editNote, setEditNote] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // One hidden file input shared across all rows. The id of the row that
+  // triggered it is stashed so the change handler knows where to PATCH.
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachTargetId, setAttachTargetId] = useState<string | null>(null);
+
+  function triggerAttach(id: string) {
+    setError(null);
+    setAttachTargetId(id);
+    fileInputRef.current?.click();
+  }
+
+  async function handleAttachFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    const targetId = attachTargetId;
+    setAttachTargetId(null);
+    if (!file || !targetId) return;
+
+    setBusyId(targetId);
+    setError(null);
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      const uploadRes = await fetch("/api/receipts/upload", {
+        method: "POST",
+        body: data,
+      });
+      const uploadJson = (await uploadRes.json()) as {
+        url?: string;
+        error?: string;
+      };
+      if (!uploadRes.ok || typeof uploadJson.url !== "string") {
+        setError(uploadJson.error ?? "Failed to upload receipt.");
+        return;
+      }
+
+      const patchRes = await fetch(`/api/expenses/${targetId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ receiptUrl: uploadJson.url }),
+      });
+      if (patchRes.ok) {
+        router.refresh();
+      } else {
+        const patchJson = (await patchRes.json()) as { error?: string };
+        setError(patchJson.error ?? "Failed to attach receipt.");
+      }
+    } catch {
+      setError("Network error while attaching receipt.");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   function startEdit(tx: TransactionView) {
     setError(null);
@@ -162,6 +219,15 @@ export default function TransactionList({
           {error}
         </p>
       )}
+
+      {/* Hidden input shared across all "Attach receipt" actions (FR-25). */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,application/pdf"
+        onChange={handleAttachFile}
+        className="hidden"
+      />
 
       <div className="overflow-x-auto rounded-lg border border-sand">
         <table className="min-w-full text-sm">
@@ -308,6 +374,26 @@ export default function TransactionList({
                     {tx.currency} {majorDisplay}
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 text-right">
+                    {tx.receiptUrl !== null ? (
+                      <a
+                        href={tx.receiptUrl}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="mr-1 rounded-md px-2 py-1 text-xs font-medium text-green transition-colors hover:underline"
+                        aria-label="View receipt"
+                      >
+                        Receipt
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => triggerAttach(tx.id)}
+                        disabled={isBusy}
+                        className="mr-1 rounded-md px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-paper hover:text-ink disabled:opacity-50"
+                      >
+                        {isBusy ? "…" : "Attach"}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => startEdit(tx)}

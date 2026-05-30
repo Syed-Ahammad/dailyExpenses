@@ -35,6 +35,10 @@ export const transactionBaseSchema = z.object({
   isVatable: z.boolean().default(false),
   vatRate: z.number().min(0).max(100).default(0),
   categorySource: z.enum(CATEGORY_SOURCES).default("manual"),
+  // Phase 4 (FR-25): optional Cloudinary URL to the attached receipt image.
+  // We only validate the shape here — the upload route is what produced it,
+  // and that route restricts host/MIME at the boundary.
+  receiptUrl: z.string().url().optional(),
   occurredAt: z.coerce.date(),
 });
 

@@ -119,6 +119,7 @@ export default async function DashboardPage() {
     currency: tx.currency,
     category: tx.category,
     note: tx.note ?? "",
+    receiptUrl: tx.receiptUrl ?? null,
     occurredAt: new Date(tx.occurredAt).toISOString(),
   }));
 

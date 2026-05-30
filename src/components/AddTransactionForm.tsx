@@ -12,7 +12,8 @@
  * without a full page reload.
  *
  * FR-5 (expense entry), FR-6 (income entry), FR-9 (multi-currency with rateToBase),
- * FR-19/FR-20 (AI category suggestion), FR-21 (category source tracking).
+ * FR-19/FR-20 (AI category suggestion), FR-21 (category source tracking),
+ * FR-25 (attach receipt), FR-26 (OCR extract amount/merchant/date).
  */
 
 import { useState, useCallback } from "react";
@@ -95,6 +96,13 @@ export default function AddTransactionForm({
   const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [categorySource, setCategorySource] = useState<CategorySource>("manual");
+
+  // Receipt + OCR state (FR-25, FR-26)
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [receiptUploading, setReceiptUploading] = useState(false);
+  const [receiptError, setReceiptError] = useState<string | null>(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrNotice, setOcrNotice] = useState<string | null>(null);
 
   // Generic field updater — keeps handlers DRY.
   const setField = useCallback(
@@ -202,6 +210,115 @@ export default function AddTransactionForm({
     setCategorySource("manual");
   }
 
+  /**
+   * Upload a chosen receipt to Cloudinary via /api/receipts/upload (FR-25).
+   * Resets any prior receipt before uploading so a second pick replaces it.
+   */
+  async function handleReceiptChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    // Clear the input value so picking the same file again still fires onChange.
+    e.target.value = "";
+    if (!file) return;
+
+    setReceiptError(null);
+    setOcrNotice(null);
+    setReceiptUploading(true);
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      const res = await fetch("/api/receipts/upload", {
+        method: "POST",
+        body: data,
+      });
+      const json = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || typeof json.url !== "string") {
+        setReceiptError(json.error ?? "Failed to upload receipt.");
+        return;
+      }
+      setReceiptUrl(json.url);
+    } catch {
+      setReceiptError("Network error while uploading receipt.");
+    } finally {
+      setReceiptUploading(false);
+    }
+  }
+
+  function handleRemoveReceipt() {
+    setReceiptUrl(null);
+    setReceiptError(null);
+    setOcrNotice(null);
+  }
+
+  /**
+   * Run OCR on the uploaded receipt (FR-26) and pre-fill any form fields the
+   * user hasn't touched yet. We never overwrite a value the user has already
+   * entered — that would be a worse UX than asking them to re-type.
+   */
+  async function handleExtractReceipt() {
+    if (!receiptUrl) return;
+    setOcrNotice(null);
+    setReceiptError(null);
+    setOcrLoading(true);
+    try {
+      const res = await fetch("/api/receipts/ocr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ receiptUrl }),
+      });
+      if (!res.ok) {
+        setReceiptError("Could not read this receipt. You can still save manually.");
+        return;
+      }
+      const json = (await res.json()) as {
+        amountMinor?: number;
+        currency?: string;
+        merchant?: string;
+        occurredAt?: string;
+      };
+
+      const filled: string[] = [];
+
+      setForm((prev) => {
+        const next = { ...prev };
+
+        if (typeof json.amountMinor === "number" && prev.amount === "") {
+          next.amount = (json.amountMinor / 100).toFixed(2);
+          filled.push("amount");
+        }
+        if (typeof json.merchant === "string" && prev.note.trim() === "") {
+          next.note = json.merchant;
+          filled.push("note");
+        }
+        if (typeof json.occurredAt === "string" && prev.occurredAt === todayIso()) {
+          next.occurredAt = json.occurredAt;
+          filled.push("date");
+        }
+        return next;
+      });
+
+      // Currency update is async (it kicks off an FX lookup), so handle it
+      // outside the state-batching block.
+      if (
+        typeof json.currency === "string" &&
+        form.currency === baseCurrency &&
+        json.currency !== baseCurrency
+      ) {
+        await handleCurrencyChange(json.currency);
+        filled.push("currency");
+      }
+
+      setOcrNotice(
+        filled.length > 0
+          ? `Pre-filled: ${filled.join(", ")}.`
+          : "Receipt scanned but no fields could be extracted.",
+      );
+    } catch {
+      setReceiptError("Network error while reading receipt.");
+    } finally {
+      setOcrLoading(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
@@ -232,6 +349,7 @@ export default function AddTransactionForm({
       isVatable: false,
       vatRate: 0,
       categorySource,
+      ...(receiptUrl && { receiptUrl }),
       occurredAt: form.occurredAt,
     };
 
@@ -247,6 +365,9 @@ export default function AddTransactionForm({
         setForm(initialState(baseCurrency));
         setAiSuggestion(null);
         setCategorySource("manual");
+        setReceiptUrl(null);
+        setReceiptError(null);
+        setOcrNotice(null);
         router.refresh();
       } else {
         const json = (await res.json()) as { error?: string };
@@ -511,9 +632,75 @@ export default function AddTransactionForm({
         />
       </div>
 
+      {/* Receipt upload + OCR (FR-25, FR-26) */}
+      <div>
+        <label className="mb-1 block text-sm font-medium text-ink">
+          Receipt <span className="font-normal text-muted">(optional)</span>
+        </label>
+
+        {receiptUrl === null ? (
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,application/pdf"
+            disabled={receiptUploading}
+            onChange={handleReceiptChange}
+            className="block w-full text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-paper file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink hover:file:bg-sand disabled:opacity-50"
+          />
+        ) : (
+          <div className="flex items-center gap-3 rounded-md border border-sand bg-paper px-3 py-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={receiptUrl}
+              alt="Receipt preview"
+              className="h-12 w-12 rounded-sm object-cover"
+              onError={(e) => {
+                // Non-image (e.g. PDF) — hide the preview cleanly.
+                e.currentTarget.style.display = "none";
+              }}
+            />
+            <a
+              href={receiptUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-sm text-green hover:underline"
+            >
+              View receipt
+            </a>
+            <div className="ml-auto flex gap-2">
+              <button
+                type="button"
+                onClick={handleExtractReceipt}
+                disabled={ocrLoading}
+                className="rounded-md border border-gold/40 bg-gold/10 px-2.5 py-1 text-xs font-medium text-ink hover:bg-gold/20 disabled:opacity-50"
+              >
+                {ocrLoading ? "Reading…" : "Extract from receipt ✦"}
+              </button>
+              <button
+                type="button"
+                onClick={handleRemoveReceipt}
+                disabled={ocrLoading}
+                className="rounded-md px-2.5 py-1 text-xs text-muted hover:underline disabled:opacity-50"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        )}
+
+        {receiptUploading && (
+          <p className="mt-1 text-xs text-muted">Uploading…</p>
+        )}
+        {ocrNotice !== null && (
+          <p className="mt-1 text-xs text-muted">{ocrNotice}</p>
+        )}
+        {receiptError !== null && (
+          <p className="mt-1 text-xs text-red-ink">{receiptError}</p>
+        )}
+      </div>
+
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || receiptUploading}
         className="w-full rounded-md bg-green px-4 py-2.5 text-sm font-medium text-card transition-[transform,opacity] hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-soft disabled:cursor-not-allowed disabled:opacity-50"
       >
         {submitting ? "Saving…" : "Save Transaction"}
