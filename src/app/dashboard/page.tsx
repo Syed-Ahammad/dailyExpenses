@@ -120,6 +120,8 @@ export default async function DashboardPage() {
     category: tx.category,
     note: tx.note ?? "",
     receiptUrl: tx.receiptUrl ?? null,
+    isVatable: tx.isVatable ?? false,
+    vatRate: tx.vatRate ?? 0,
     occurredAt: new Date(tx.occurredAt).toISOString(),
   }));
 

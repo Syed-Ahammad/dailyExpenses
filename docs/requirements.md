@@ -74,6 +74,14 @@ requirement has an ID (FR-n) for reference in other documents.
 - FR-28: The system restricts higher-tier features to subscribers on
   the relevant plan.
 
+### VAT reporting
+
+- FR-29: A user can produce a period VAT report (quarterly by default,
+  monthly optional) summarizing **output VAT** (collected on income),
+  **input VAT** (paid on expenses), and the **net VAT due** for the
+  period, all expressed in the user's base currency. The report is
+  available as on-screen summary, CSV, and PDF.
+
 ## Non-functional requirements
 
 - NFR-1: Money is stored as integers in minor units (fils) to avoid

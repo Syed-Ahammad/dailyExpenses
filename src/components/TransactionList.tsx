@@ -36,6 +36,9 @@ export interface TransactionView {
   note: string;
   /** Cloudinary URL if a receipt is attached, otherwise null (FR-25). */
   receiptUrl: string | null;
+  /** VAT flag (FR-29) — drives the period VAT report aggregation. */
+  isVatable: boolean;
+  vatRate: number;
   occurredAt: string; // ISO string
 }
 
@@ -62,6 +65,8 @@ export default function TransactionList({
   const [editCategory, setEditCategory] = useState("");
   const [editDate, setEditDate] = useState("");
   const [editNote, setEditNote] = useState("");
+  const [editIsVatable, setEditIsVatable] = useState(false);
+  const [editVatRate, setEditVatRate] = useState("5");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -126,6 +131,12 @@ export default function TransactionList({
     setEditCategory(tx.category);
     setEditDate(tx.occurredAt.slice(0, 10)); // yyyy-mm-dd for the date input
     setEditNote(tx.note);
+    setEditIsVatable(tx.isVatable);
+    // Pre-fill the rate field with the stored rate, or 5 (UAE standard) if the
+    // row was never VAT-flagged — saves a keystroke when toggling it on.
+    setEditVatRate(
+      tx.isVatable && tx.vatRate > 0 ? String(tx.vatRate) : "5",
+    );
   }
 
   function cancelEdit() {
@@ -150,13 +161,22 @@ export default function TransactionList({
       return;
     }
 
-    // Always send all four editable fields — the API rejects an empty body,
-    // and a no-op edit is harmless.
+    // Validate VAT rate when the flag is on (FR-29). Off → server-side default 0.
+    const vatRateNum = editIsVatable ? parseFloat(editVatRate) : 0;
+    if (editIsVatable && (isNaN(vatRateNum) || vatRateNum < 0 || vatRateNum > 100)) {
+      setError("VAT rate must be a number between 0 and 100.");
+      return;
+    }
+
+    // Always send all editable fields — the API rejects an empty body, and a
+    // no-op edit is harmless.
     const body = {
       amountMinor: Math.round(amountNum * 100),
       category: editCategory,
       occurredAt: editDate,
       note: editNote.trim(), // "" clears the note
+      isVatable: editIsVatable,
+      vatRate: vatRateNum,
     };
 
     setBusyId(id);
@@ -330,6 +350,39 @@ export default function TransactionList({
                           />
                         </div>
                       </div>
+                      <div className="mt-3 flex flex-wrap items-center gap-3">
+                        <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-ink">
+                          <input
+                            type="checkbox"
+                            checked={editIsVatable}
+                            onChange={(e) => setEditIsVatable(e.target.checked)}
+                            className="accent-green"
+                          />
+                          VAT applies
+                        </label>
+                        {editIsVatable && (
+                          <div className="flex items-center gap-1.5">
+                            <label
+                              htmlFor={`vat-rate-${tx.id}`}
+                              className="text-xs text-muted"
+                            >
+                              Rate %
+                            </label>
+                            <input
+                              id={`vat-rate-${tx.id}`}
+                              type="number"
+                              inputMode="decimal"
+                              step="0.01"
+                              min="0"
+                              max="100"
+                              value={editVatRate}
+                              onChange={(e) => setEditVatRate(e.target.value)}
+                              className="w-20 rounded-sm border border-sand px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-green-soft"
+                            />
+                          </div>
+                        )}
+                      </div>
+
                       <div className="mt-3 flex items-center gap-2">
                         <button
                           type="button"

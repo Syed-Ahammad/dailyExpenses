@@ -1,11 +1,12 @@
 /**
- * Reports page — monthly export (FR-22 CSV; PDF FR-23 later).
+ * Reports page — monthly transactions export (FR-22, FR-23) + VAT report (FR-29).
  * Protected by middleware; base currency comes from the session seam.
  */
 
 import Link from "next/link";
 import { getUserBaseCurrency } from "@/lib/auth";
 import ExportPanel from "@/components/ExportPanel";
+import VatReportPanel from "@/components/VatReportPanel";
 import SignOutButton from "@/components/SignOutButton";
 
 // Reads the session (base currency) — render per request.
@@ -36,7 +37,10 @@ export default async function ReportsPage() {
         </div>
       </div>
 
-      <ExportPanel baseCurrency={baseCurrency} />
+      <div className="space-y-6">
+        <VatReportPanel baseCurrency={baseCurrency} />
+        <ExportPanel baseCurrency={baseCurrency} />
+      </div>
     </main>
   );
 }

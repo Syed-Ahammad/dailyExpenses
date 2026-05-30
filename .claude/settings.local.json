@@ -40,7 +40,11 @@
       "mcp__context7__query-docs",
       "Bash(npx next *)",
       "Bash(Start-Sleep -Seconds 5)",
-      "Bash(Get-Content \"C:\\\\Users\\\\syed_\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--dailyExpenses\\\\0197d12c-fb86-4cff-a0f5-34a2075d7646\\\\tasks\\\\bym5qz77w.output\")"
+      "Bash(Get-Content \"C:\\\\Users\\\\syed_\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--dailyExpenses\\\\0197d12c-fb86-4cff-a0f5-34a2075d7646\\\\tasks\\\\bym5qz77w.output\")",
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }

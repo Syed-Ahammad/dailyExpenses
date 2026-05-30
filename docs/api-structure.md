@@ -201,6 +201,39 @@ since each call has a Textract per-page cost).
 Generate a downloadable monthly report. Returns the file with the
 appropriate content type.
 
+### VAT report
+
+#### GET /api/vat-report?period=YYYY-Qn|YYYY-MM&format=json|csv|pdf
+
+Period VAT summary for the signed-in user (FR-29). Quarterly periods
+(e.g. `2026-Q2`) are the canonical cadence — monthly is accepted but
+optional. `format` defaults to `json` and otherwise returns a CSV or PDF
+download with the appropriate `Content-Disposition`.
+
+JSON response 200:
+
+```
+{
+  "period": "2026-Q2",
+  "kind": "quarter",
+  "from": "2026-04-01",
+  "to": "2026-07-01",
+  "baseCurrency": "AED",
+  "output": {
+    "vatMinor": 5000,
+    "netMinor": 100000,
+    "grossMinor": 105000,
+    "byRate": [ { "rate": 5, "netMinor": 100000, "vatMinor": 5000, "grossMinor": 105000 } ],
+    "byCategory": [ { "category": "Consulting", "netMinor": 100000, "vatMinor": 5000 } ]
+  },
+  "input": { ... same shape ... },
+  "netVatMinor": 4000
+}
+```
+
+Amounts are integer minor units (NFR-1). The aggregation assumes
+transaction amounts are **VAT-inclusive** — see `src/lib/vat.ts`.
+
 ### Auth (later phase)
 
 Authentication routes are provided by NextAuth under
@@ -219,5 +252,6 @@ src/app/api/
   receipts/upload/route.ts   — POST upload receipt (Cloudinary)
   receipts/ocr/route.ts      — POST OCR receipt (Textract)
   export/route.ts            — GET monthly export
+  vat-report/route.ts        — GET period VAT report
   auth/[...nextauth]/route.ts — NextAuth handler
 ```

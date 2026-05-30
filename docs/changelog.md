@@ -12,6 +12,17 @@ Work in progress, not yet released.
 
 ### Added
 
+- **VAT report (FR-29)** — `GET /api/vat-report?period=YYYY-Qn|YYYY-MM` returns
+  output VAT (income), input VAT (expenses), and net VAT due for the period in
+  the user's base currency, with per-rate and per-category breakdowns. JSON by
+  default; `&format=csv|pdf` downloads an accountant-ready report. A new VAT
+  section on `/reports` defaults to the current quarter and shows the summary
+  on screen. Aggregation assumes amounts are VAT-inclusive (UAE receipt-style)
+  — see `src/lib/vat.ts`.
+- **VAT entry on transactions (FR-29 prerequisite)** — the add-transaction form
+  and the inline edit row in the dashboard now expose "VAT applies" + rate
+  (defaulting to 5%, the UAE standard) so existing and new rows feed the VAT
+  report properly. Previously the form hardcoded `isVatable: false`.
 - **Receipt upload (FR-25)** — `POST /api/receipts/upload` accepts a multipart
   `file` (JPEG/PNG/WEBP image or PDF, ≤ 5 MB), streams it to Cloudinary under
   a per-user folder, and returns `{ url }`. The transaction form lets users

@@ -13,7 +13,8 @@
  *
  * FR-5 (expense entry), FR-6 (income entry), FR-9 (multi-currency with rateToBase),
  * FR-19/FR-20 (AI category suggestion), FR-21 (category source tracking),
- * FR-25 (attach receipt), FR-26 (OCR extract amount/merchant/date).
+ * FR-25 (attach receipt), FR-26 (OCR extract amount/merchant/date),
+ * FR-29 (VAT flag + rate so the period VAT report is meaningful).
  */
 
 import { useState, useCallback } from "react";
@@ -45,6 +46,8 @@ interface FormState {
   rateToBase: string;
   category: string;
   paymentMethod: PaymentMethod;
+  isVatable: boolean;
+  vatRate: string;
   occurredAt: string;
   note: string;
 }
@@ -65,6 +68,10 @@ function initialState(baseCurrency: string): FormState {
     rateToBase: "1",
     category: defaultCategory("expense"),
     paymentMethod: "",
+    // VAT defaults: most personal-flow expenses aren't VATable; the 5% rate is
+    // pre-loaded for when the user toggles it on (UAE standard FTA rate).
+    isVatable: false,
+    vatRate: "5",
     occurredAt: todayIso(),
     note: "",
   };
@@ -338,6 +345,14 @@ export default function AddTransactionForm({
     // Convert major units → integer minor units (NFR-1).
     const amountMinor = Math.round(amountNum * 100);
 
+    // VAT (FR-29): only forward the rate when the user actually flagged the
+    // transaction as VATable; otherwise the server-side default of 0 stands.
+    const vatRateNum = form.isVatable ? parseFloat(form.vatRate) : 0;
+    if (form.isVatable && (isNaN(vatRateNum) || vatRateNum < 0 || vatRateNum > 100)) {
+      setError("VAT rate must be a number between 0 and 100.");
+      return;
+    }
+
     const body = {
       type: form.type,
       amountMinor,
@@ -346,8 +361,8 @@ export default function AddTransactionForm({
       category: form.category,
       ...(form.paymentMethod !== "" && { paymentMethod: form.paymentMethod }),
       note: form.note.trim() || undefined,
-      isVatable: false,
-      vatRate: 0,
+      isVatable: form.isVatable,
+      vatRate: vatRateNum,
       categorySource,
       ...(receiptUrl && { receiptUrl }),
       occurredAt: form.occurredAt,
@@ -592,6 +607,38 @@ export default function AddTransactionForm({
           <option value="cheque">Cheque</option>
           <option value="other">Other</option>
         </select>
+      </div>
+
+      {/* VAT (FR-29) — checkbox reveals the rate field, default 5% (UAE standard). */}
+      <div>
+        <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-ink">
+          <input
+            type="checkbox"
+            checked={form.isVatable}
+            onChange={(e) => setField("isVatable", e.target.checked)}
+            className="accent-green"
+          />
+          VAT applies
+        </label>
+        {form.isVatable && (
+          <div className="mt-2 flex items-center gap-2">
+            <label htmlFor="vatRate" className="text-sm text-muted">
+              Rate %
+            </label>
+            <input
+              id="vatRate"
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              min="0"
+              max="100"
+              value={form.vatRate}
+              onChange={(e) => setField("vatRate", e.target.value)}
+              className="w-24 rounded-sm border border-sand px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-soft"
+            />
+            <span className="text-xs text-muted">UAE standard rate is 5%.</span>
+          </div>
+        )}
       </div>
 
       {/* Date */}
