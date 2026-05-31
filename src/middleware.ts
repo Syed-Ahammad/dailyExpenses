@@ -12,7 +12,7 @@ const { auth } = NextAuth(authConfig);
 
 // /dashboard is intentionally excluded — unauthenticated visitors get the
 // guest trial experience (GuestDashboard component) instead of a redirect.
-const PROTECTED_PAGES = ["/budgets", "/reports", "/billing"];
+const PROTECTED_PAGES = ["/budgets", "/reports", "/billing", "/recurring"];
 const AUTH_PAGES = ["/sign-in", "/sign-up"];
 const STATE_CHANGING = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 
@@ -69,8 +69,12 @@ export default auth(async (req) => {
   // signature verification inside the route is the auth mechanism.
   const isStripeWebhook = pathname === "/api/stripe/webhook";
 
+  // Recurring cron endpoint is called by Vercel's cron scheduler (no session).
+  // The route itself checks CRON_SECRET via Authorization header.
+  const isRecurringProcess = pathname === "/api/recurring/process";
+
   // Protect owned API routes with a 401 JSON (not an HTML redirect).
-  if (isApi && !isAuthApi && !isStripeWebhook && !isLoggedIn) {
+  if (isApi && !isAuthApi && !isStripeWebhook && !isRecurringProcess && !isLoggedIn) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

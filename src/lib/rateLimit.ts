@@ -16,7 +16,8 @@ type RuleName =
   | "budgets"
   | "receiptsUpload"
   | "receiptsOcr"
-  | "stripeCheckout";
+  | "stripeCheckout"
+  | "recurringCreate";
 
 // limit = max requests per window; window in seconds. Mirrors docs/auth.md.
 const RULES: Record<RuleName, { limit: number; window: number }> = {
@@ -32,6 +33,7 @@ const RULES: Record<RuleName, { limit: number; window: number }> = {
   receiptsOcr: { limit: 15, window: 60 },
   // Checkout creates a Stripe session which has cost — keep it tight.
   stripeCheckout: { limit: 5, window: 60 },
+  recurringCreate: { limit: 30, window: 60 },
 };
 
 const upstashConfigured =
@@ -146,6 +148,9 @@ export async function rateLimitRequest(
   }
   if (pathname === "/api/stripe/checkout") {
     return rateLimitAllow("stripeCheckout", userId ?? ip);
+  }
+  if (pathname === "/api/recurring") {
+    return rateLimitAllow("recurringCreate", userId ?? ip);
   }
   return true;
 }

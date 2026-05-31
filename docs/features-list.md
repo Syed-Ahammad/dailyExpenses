@@ -53,6 +53,14 @@ Status values: Done, In progress, Planned.
 | Subscription plans                   | Planned     | FR-27       |
 | Plan-based feature gating            | Planned     | FR-28       |
 
+## Phase 6 — Recurring templates
+
+| Feature                              | Status      | Requirement |
+|--------------------------------------|-------------|-------------|
+| Create / edit / delete templates     | Done        | FR-30       |
+| Pause / resume templates             | Done        | FR-30       |
+| Auto-generate transactions via cron  | Done        | FR-31       |
+
 ## Notes
 
 - VAT reporting is the primary monetizable feature. It is scheduled in

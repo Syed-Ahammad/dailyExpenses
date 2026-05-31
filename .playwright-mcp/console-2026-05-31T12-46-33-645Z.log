@@ -1,0 +1,2 @@
+[   21092ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://dailyexpenses.e-markeet.com/api/subscription:0
+[   21724ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dailyexpenses.e-markeet.com/api/stripe/webhook:0

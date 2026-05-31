@@ -123,6 +123,73 @@ export const resetConfirmSchema = z.object({
   newPassword: passwordSchema,
 });
 
+// ---------------------------------------------------------------------------
+// Recurring templates (Phase 6 — FR-30, FR-31)
+// ---------------------------------------------------------------------------
+
+const FREQUENCIES = ["daily", "weekly", "monthly", "yearly"] as const;
+
+export const recurringTemplateInputSchema = z
+  .object({
+    type: z.enum(["expense", "income"]),
+    amountMinor: z.number().int().nonnegative(),
+    currency: z
+      .string()
+      .length(3)
+      .toUpperCase()
+      .refine(isSupportedCurrency, "Unsupported currency"),
+    category: z.string(),
+    paymentMethod: z.enum(PAYMENT_METHODS).optional(),
+    note: z.string().max(500).optional(),
+    isVatable: z.boolean().default(false),
+    vatRate: z.number().min(0).max(100).default(0),
+    frequency: z.enum(FREQUENCIES),
+    nextDueAt: z.coerce.date(),
+    endsAt: z.coerce.date().optional(),
+  })
+  .superRefine((val, ctx) => {
+    const allowed =
+      val.type === "expense"
+        ? (EXPENSE_CATEGORIES as readonly string[])
+        : (INCOME_CATEGORIES as readonly string[]);
+    if (!allowed.includes(val.category)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["category"],
+        message: `Invalid ${val.type} category: ${val.category}`,
+      });
+    }
+    if (val.endsAt && val.endsAt <= val.nextDueAt) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["endsAt"],
+        message: "`endsAt` must be after `nextDueAt`",
+      });
+    }
+  });
+
+export const recurringTemplateUpdateSchema = z.object({
+  amountMinor: z.number().int().nonnegative().optional(),
+  currency: z
+    .string()
+    .length(3)
+    .toUpperCase()
+    .refine(isSupportedCurrency, "Unsupported currency")
+    .optional(),
+  category: z.string().optional(),
+  paymentMethod: z.enum(PAYMENT_METHODS).optional(),
+  note: z.string().max(500).optional(),
+  isVatable: z.boolean().optional(),
+  vatRate: z.number().min(0).max(100).optional(),
+  frequency: z.enum(FREQUENCIES).optional(),
+  nextDueAt: z.coerce.date().optional(),
+  endsAt: z.coerce.date().nullable().optional(),
+  isActive: z.boolean().optional(),
+});
+
+export type RecurringTemplateInput = z.infer<typeof recurringTemplateInputSchema>;
+export type RecurringTemplateUpdate = z.infer<typeof recurringTemplateUpdateSchema>;
+
 export type TransactionInput = z.infer<typeof transactionInputSchema>;
 export type TransactionUpdate = z.infer<typeof transactionUpdateSchema>;
 export type BudgetInput = z.infer<typeof budgetInputSchema>;

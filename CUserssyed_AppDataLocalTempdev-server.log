@@ -1,0 +1,26 @@
+
+> daily-expenses@0.1.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+ ⚠ Port 3001 is in use, trying 3002 instead.
+ ⚠ Port 3002 is in use, trying 3003 instead.
+ ⚠ Port 3003 is in use, trying 3004 instead.
+ ⚠ Port 3004 is in use, trying 3005 instead.
+ ⚠ Port 3005 is in use, trying 3006 instead.
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3006
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 8.1s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1204ms (276 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled in 853ms (276 modules)
+ ○ Compiling /api/recurring/process ...
+ ✓ Compiled /api/recurring/process in 714ms (83 modules)
+{"ts":"2026-05-31T13:18:02.739Z","level":"error","msg":"POST /api/recurring/process failed","err":{"code":"ECONNREFUSED","syscall":"querySrv","hostname":"_mongodb._tcp.cluster0.q0kw4vk.mongodb.net"}}
+ POST /api/recurring/process 500 in 2256ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: EPERM: operation not permitted, rename 'D:\dailyExpenses\.next\cache\webpack\server-development\0.pack.gz_' -> 'D:\dailyExpenses\.next\cache\webpack\server-development\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)

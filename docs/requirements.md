@@ -82,6 +82,15 @@ requirement has an ID (FR-n) for reference in other documents.
   period, all expressed in the user's base currency. The report is
   available as on-screen summary, CSV, and PDF.
 
+### Recurring templates
+
+- FR-30: A user can create a recurring transaction template specifying amount,
+  currency, category, frequency (daily, weekly, monthly, yearly), and a first
+  due date. Optional fields: payment method, note, VAT flag, and an end date.
+- FR-31: The system automatically generates a transaction from each active
+  template on its due date and advances the due date to the next occurrence.
+  Templates past their end date are deactivated automatically.
+
 ## Non-functional requirements
 
 - NFR-1: Money is stored as integers in minor units (fils) to avoid

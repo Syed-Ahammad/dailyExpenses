@@ -162,6 +162,12 @@ export default async function DashboardPage() {
           >
             Reports
           </Link>
+          <Link
+            href="/recurring"
+            className="rounded-pill px-3 py-1.5 text-sm font-medium text-green transition-colors hover:bg-green-soft focus:outline-none focus:ring-2 focus:ring-green-soft"
+          >
+            Recurring
+          </Link>
           <SignOutButton />
         </div>
       </div>
