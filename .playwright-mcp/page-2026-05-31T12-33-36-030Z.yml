@@ -1,0 +1,58 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - link "← Dashboard" [ref=e5] [cursor=pointer]:
+      - /url: /dashboard
+    - heading "Billing" [level=1] [ref=e6]
+    - paragraph [ref=e7]: Upgrade to Pro to unlock receipt OCR and downloadable VAT reports.
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: Current plan
+        - heading "Free" [level=2] [ref=e11]
+        - paragraph [ref=e12]: $0 / month
+        - list [ref=e13]:
+          - listitem [ref=e14]:
+            - img [ref=e15]
+            - text: Unlimited transactions
+          - listitem [ref=e17]:
+            - img [ref=e18]
+            - text: AI category suggestions
+          - listitem [ref=e20]:
+            - img [ref=e21]
+            - text: Multi-currency entry with live FX rates
+          - listitem [ref=e23]:
+            - img [ref=e24]
+            - text: Monthly budget limits with alerts
+          - listitem [ref=e26]:
+            - img [ref=e27]
+            - text: Dashboard totals and per-category breakdown
+          - listitem [ref=e29]:
+            - img [ref=e30]
+            - text: CSV and PDF monthly export
+          - listitem [ref=e32]:
+            - img [ref=e33]
+            - text: Receipt photo storage
+          - listitem [ref=e35]:
+            - img [ref=e36]
+            - text: VAT summary (on-screen)
+          - listitem [ref=e38]:
+            - img [ref=e39]
+            - text: 14-day guest trial (no sign-up required)
+        - paragraph [ref=e42]: Your current plan
+      - generic [ref=e43]:
+        - generic [ref=e44]: Recommended
+        - heading "Pro" [level=2] [ref=e45]
+        - paragraph [ref=e46]: $9 / month
+        - list [ref=e47]:
+          - listitem [ref=e48]:
+            - img [ref=e49]
+            - text: Everything in Free
+          - listitem [ref=e51]:
+            - img [ref=e52]
+            - text: Receipt OCR — auto-extract amount and merchant
+          - listitem [ref=e54]:
+            - img [ref=e55]
+            - text: VAT report CSV download (accountant-ready)
+          - listitem [ref=e57]:
+            - img [ref=e58]
+            - text: VAT report PDF download (accountant-ready)
+    - paragraph [ref=e62]: Payments are processed by Stripe. Cancel anytime — your data is yours.

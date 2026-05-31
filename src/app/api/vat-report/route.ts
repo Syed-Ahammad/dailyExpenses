@@ -9,6 +9,7 @@
 import { NextRequest } from "next/server";
 import { connectMongo } from "@/lib/mongodb";
 import { getUserId } from "@/lib/auth";
+import { requirePro, PlanError } from "@/lib/subscription";
 import { DEFAULT_BASE_CURRENCY } from "@/lib/currencies";
 import { TransactionModel } from "@/models/Transaction";
 import { UserModel } from "@/models/User";
@@ -53,6 +54,25 @@ export async function GET(request: NextRequest) {
 
     await connectMongo();
     const userId = await getUserId();
+
+    // CSV and PDF downloads are Pro-only (FR-28). JSON summary is free so users
+    // can see the figures and decide whether upgrading is worth it.
+    if (formatParam === "csv" || formatParam === "pdf") {
+      try {
+        await requirePro(userId);
+      } catch (e) {
+        if (e instanceof PlanError) {
+          return Response.json(
+            {
+              error:
+                "Downloading the VAT report requires a Pro subscription. Upgrade at /billing.",
+            },
+            { status: 403 },
+          );
+        }
+        throw e;
+      }
+    }
 
     const [user, txs] = await Promise.all([
       UserModel.findById(userId).lean<{ baseCurrency?: string } | null>(),

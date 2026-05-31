@@ -12,7 +12,7 @@ const { auth } = NextAuth(authConfig);
 
 // /dashboard is intentionally excluded — unauthenticated visitors get the
 // guest trial experience (GuestDashboard component) instead of a redirect.
-const PROTECTED_PAGES = ["/budgets", "/reports"];
+const PROTECTED_PAGES = ["/budgets", "/reports", "/billing"];
 const AUTH_PAGES = ["/sign-in", "/sign-up"];
 const STATE_CHANGING = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 
@@ -65,8 +65,12 @@ export default auth(async (req) => {
     return;
   }
 
+  // Stripe webhook is called by Stripe's servers with no session cookie —
+  // signature verification inside the route is the auth mechanism.
+  const isStripeWebhook = pathname === "/api/stripe/webhook";
+
   // Protect owned API routes with a 401 JSON (not an HTML redirect).
-  if (isApi && !isAuthApi && !isLoggedIn) {
+  if (isApi && !isAuthApi && !isStripeWebhook && !isLoggedIn) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

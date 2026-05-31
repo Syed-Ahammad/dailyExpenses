@@ -58,7 +58,11 @@
       "Bash(fuser -k 3001/tcp)",
       "Bash(pkill -f \"next-server\")",
       "Bash(kill 960 1045)",
-      "Bash(npm --prefix D:/dailyExpenses run dev)"
+      "Bash(npm --prefix D:/dailyExpenses run dev)",
+      "Bash(stripe *)",
+      "Bash(winget install *)",
+      "Bash(find D:\\\\\\\\dailyExpenses -name \"*.lock\" -type f)",
+      "mcp__filesystem__list_directory"
     ]
   }
 }

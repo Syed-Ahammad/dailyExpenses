@@ -12,6 +12,8 @@ const userSchema = new Schema(
     // Optional: not set for OAuth-only accounts (Google, etc.)
     passwordHash: { type: String },
     name: { type: String },
+    // Set when the user first goes through Stripe Checkout (phase 5 billing).
+    stripeCustomerId: { type: String },
     baseCurrency: {
       type: String,
       required: true,

@@ -1,0 +1,108 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic "Back to e-markeet sandbox":
+          - generic:
+            - generic:
+              - generic: Back
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                  - heading "e-markeet sandbox" [level=1]
+        - generic [ref=e21]: Sandbox
+    - generic [ref=e24]:
+      - heading "Subscribe to Daily Expenses Pro" [level=2] [ref=e25]
+      - generic [ref=e27]:
+        - generic [ref=e31]:
+          - generic [ref=e32]: $9.00
+          - generic [ref=e35]:
+            - text: per
+            - text: month
+        - generic [ref=e42]: Receipt OCR, VAT report CSV & PDF downloads, and all future Pro features.
+  - generic [ref=e43]:
+    - main [ref=e44]:
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - iframe [ref=e54]:
+            - button "Pay with Link" [ref=f4e8] [cursor=pointer]:
+              - generic [ref=f4e9]:
+                - generic [ref=f4e10]:
+                  - text: Pay with
+                  - img [ref=f4e11]
+                - generic [ref=f4e14]:
+                  - img [ref=f4e15]
+                  - generic [ref=f4e22]: "0000"
+          - generic [ref=e55]:
+            - separator [ref=e56]
+            - paragraph [ref=e57]: Or
+        - heading "Contact information" [level=2] [ref=e58]
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - generic [ref=e70]:
+            - generic [ref=e71]: Email
+            - generic [ref=e74]: syedahammad54@gmail.com
+          - heading "Payment method" [level=2] [ref=e76]
+        - generic [ref=e77]:
+          - list [ref=e78]:
+            - listitem [ref=e83]:
+              - generic [ref=e84]:
+                - generic [ref=e98]: Card
+                - generic [ref=e104]:
+                  - generic [ref=e106]:
+                    - generic [ref=e108]: Card information
+                    - group [ref=e109]:
+                      - generic [ref=e110]:
+                        - generic [ref=e112]:
+                          - textbox "Card number" [disabled] [ref=e115]:
+                            - /placeholder: 1234 1234 1234 1234
+                            - text: 4242 4242 4242 4242
+                          - generic:
+                            - img "Visa"
+                        - textbox "Expiration" [disabled] [ref=e120]:
+                          - /placeholder: MM / YY
+                          - text: 12 / 29
+                        - generic [ref=e122]:
+                          - textbox "CVC" [disabled] [ref=e125]: "123"
+                          - generic:
+                            - generic:
+                              - img "Credit or debit card CVC"
+                  - group [ref=e214]:
+                    - generic [ref=e132]:
+                      - generic [ref=e134]:
+                        - generic [ref=e136]: Cardholder name
+                        - textbox [disabled] [ref=e215]:
+                          - /placeholder: Full name on card
+                          - text: Syed Ahammad
+                      - generic [ref=e145]:
+                        - generic [ref=e147]: Country or region
+                        - combobox [disabled] [ref=e216]
+          - generic [ref=e167]:
+            - checkbox "Save my information for faster checkout" [disabled] [ref=e169]
+            - generic [ref=e170]:
+              - generic [ref=e173] [cursor=pointer]: Save my information for faster checkout
+              - generic [ref=e175]: Pay securely at e-markeet sandbox and everywhere Link is accepted.
+        - generic [ref=e177]:
+          - button [disabled] [ref=e217]:
+            - generic:
+              - generic [ref=e182]: Subscribe
+              - generic [ref=e183]: Processing
+            - img [ref=e188]
+            - img [ref=e193]
+          - generic [ref=e199]: By subscribing, you authorize e-markeet sandbox to charge you according to the terms until you cancel.
+      - generic:
+        - textbox "Agent Identity Token" [ref=e200]
+        - generic [ref=e201]:
+          - checkbox "I am an AI agent acting on behalf of someone else" [ref=e202]
+          - text: I am an AI agent acting on behalf of someone else
+    - contentinfo [ref=e204]:
+      - link "Powered by Stripe" [ref=e206] [cursor=pointer]:
+        - /url: https://stripe.com
+        - generic [ref=e207]:
+          - text: Powered by
+          - img "Stripe" [ref=e209]
+      - link "Terms" [ref=e212] [cursor=pointer]:
+        - /url: https://stripe.com/legal/end-users
+      - link "Privacy" [ref=e213] [cursor=pointer]:
+        - /url: https://stripe.com/privacy

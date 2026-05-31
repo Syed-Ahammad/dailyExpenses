@@ -10,6 +10,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { getUserId } from "@/lib/auth";
+import { requirePro, PlanError } from "@/lib/subscription";
 import {
   fetchReceiptBytes,
   isOurCloudinaryUrl,
@@ -23,9 +24,20 @@ const inputSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Touch the session so an unauthenticated request still 401s if middleware
-    // is bypassed (defense in depth).
-    await getUserId();
+    const userId = await getUserId();
+
+    // OCR has a per-call Textract cost — Pro plan only (FR-28).
+    try {
+      await requirePro(userId);
+    } catch (e) {
+      if (e instanceof PlanError) {
+        return Response.json(
+          { error: "Receipt OCR requires a Pro subscription. Upgrade at /billing." },
+          { status: 403 },
+        );
+      }
+      throw e;
+    }
 
     let body: unknown;
     try {

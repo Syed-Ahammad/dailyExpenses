@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]: D
+        - heading "Daily Expenses" [level=1] [ref=e6]
+        - paragraph [ref=e7]: Sign in to your account
+      - generic [ref=e8]:
+        - button "Continue with Google" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]
+          - text: Continue with Google
+        - generic [ref=e17]: or
+        - form "Sign in" [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: Email
+            - textbox "Email" [disabled] [ref=e22]: syed_ahammad@outlook.com
+          - generic [ref=e23]:
+            - generic [ref=e24]:
+              - generic [ref=e25]: Password
+              - link "Forgot password?" [ref=e26] [cursor=pointer]:
+                - /url: /forgot-password
+            - textbox "Password" [disabled] [ref=e27]: 21436587@Syed
+          - button "Signing in…" [disabled] [ref=e32]
+      - paragraph [ref=e29]:
+        - text: Don't have an account?
+        - link "Create one" [ref=e30] [cursor=pointer]:
+          - /url: /sign-up
+  - alert [ref=e31]

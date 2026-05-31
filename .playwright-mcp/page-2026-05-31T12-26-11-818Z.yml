@@ -1,0 +1,167 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e31]
+  - main [ref=e35]:
+    - generic [ref=e36]:
+      - generic [ref=e37]:
+        - heading "Dashboard" [level=1] [ref=e38]
+        - paragraph [ref=e39]: All amounts in USD
+      - generic [ref=e40]:
+        - link "Budgets" [ref=e41] [cursor=pointer]:
+          - /url: /budgets
+        - link "Reports" [ref=e42] [cursor=pointer]:
+          - /url: /reports
+        - button "Sign out" [ref=e43] [cursor=pointer]
+    - region "Monthly summary" [ref=e44]:
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - paragraph [ref=e47]: Expense Today
+          - paragraph [ref=e48]: USD 0.00
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: Expense This Week
+          - paragraph [ref=e51]: USD 205.00
+        - generic [ref=e52]:
+          - paragraph [ref=e53]: Expense This Month
+          - paragraph [ref=e54]: USD 205.00
+        - generic [ref=e55]:
+          - paragraph [ref=e56]: Income This Month
+          - paragraph [ref=e57]: USD 1000.00
+        - generic [ref=e58]:
+          - paragraph [ref=e59]: Balance This Month
+          - paragraph [ref=e60]: USD 795.00
+    - generic [ref=e61]:
+      - generic [ref=e62]:
+        - region "Category breakdown" [ref=e63]:
+          - heading "Spending by Category" [level=2] [ref=e64]
+          - list [ref=e65]:
+            - listitem [ref=e66]:
+              - generic [ref=e67]:
+                - generic [ref=e68]: Food & Dining
+                - generic [ref=e69]: USD 205.00
+        - region "Recent transactions" [ref=e72]:
+          - heading "Recent Transactions" [level=2] [ref=e73]
+          - table [ref=e76]:
+            - rowgroup [ref=e77]:
+              - row "Date Category Note Amount Actions" [ref=e78]:
+                - columnheader "Date" [ref=e79]
+                - columnheader "Category" [ref=e80]
+                - columnheader "Note" [ref=e81]
+                - columnheader "Amount" [ref=e82]
+                - columnheader "Actions" [ref=e83]:
+                  - generic [ref=e84]: Actions
+            - rowgroup [ref=e85]:
+              - row "30 May 2026 Other Income salary +USD 1000.00 Attach Edit Delete" [ref=e86]:
+                - cell "30 May 2026" [ref=e87]
+                - cell "Other Income" [ref=e88]
+                - cell "salary" [ref=e89]
+                - cell "+USD 1000.00" [ref=e90]
+                - cell "Attach Edit Delete" [ref=e91]:
+                  - button "Attach" [ref=e92] [cursor=pointer]
+                  - button "Edit" [ref=e93] [cursor=pointer]
+                  - button "Delete" [ref=e94] [cursor=pointer]
+              - row "30 May 2026 Food & Dining — −USD 205.00 Attach Edit Delete" [ref=e95]:
+                - cell "30 May 2026" [ref=e96]
+                - cell "Food & Dining" [ref=e97]
+                - cell "—" [ref=e98]
+                - cell "−USD 205.00" [ref=e99]
+                - cell "Attach Edit Delete" [ref=e100]:
+                  - button "Attach" [ref=e101] [cursor=pointer]
+                  - button "Edit" [ref=e102] [cursor=pointer]
+                  - button "Delete" [ref=e103] [cursor=pointer]
+      - form "Add transaction" [ref=e105]:
+        - heading "Add Transaction" [level=2] [ref=e106]
+        - group "Type" [ref=e107]:
+          - generic [ref=e108]: Type
+          - generic [ref=e109]:
+            - generic [ref=e110] [cursor=pointer]:
+              - radio "expense" [checked] [ref=e111]
+              - generic [ref=e112]: expense
+            - generic [ref=e113] [cursor=pointer]:
+              - radio "income" [ref=e114]
+              - generic [ref=e115]: income
+        - generic [ref=e116]:
+          - generic [ref=e117]:
+            - generic [ref=e118]: Amount
+            - spinbutton "Amount" [ref=e119]
+          - generic [ref=e120]:
+            - generic [ref=e121]: Currency
+            - combobox "Currency" [ref=e122]:
+              - option "AED — UAE Dirham"
+              - option "AUD — Australian Dollar"
+              - option "BDT — Bangladeshi Taka"
+              - option "BHD — Bahraini Dinar"
+              - option "BRL — Brazilian Real"
+              - option "CAD — Canadian Dollar"
+              - option "CHF — Swiss Franc"
+              - option "CNY — Chinese Yuan"
+              - option "DKK — Danish Krone"
+              - option "EGP — Egyptian Pound"
+              - option "EUR — Euro"
+              - option "GBP — British Pound Sterling"
+              - option "HKD — Hong Kong Dollar"
+              - option "IDR — Indonesian Rupiah"
+              - option "INR — Indian Rupee"
+              - option "JPY — Japanese Yen"
+              - option "KES — Kenyan Shilling"
+              - option "KRW — South Korean Won"
+              - option "KWD — Kuwaiti Dinar"
+              - option "LKR — Sri Lankan Rupee"
+              - option "MXN — Mexican Peso"
+              - option "MYR — Malaysian Ringgit"
+              - option "NGN — Nigerian Naira"
+              - option "NOK — Norwegian Krone"
+              - option "NZD — New Zealand Dollar"
+              - option "OMR — Omani Rial"
+              - option "PHP — Philippine Peso"
+              - option "PKR — Pakistani Rupee"
+              - option "QAR — Qatari Riyal"
+              - option "SAR — Saudi Riyal"
+              - option "SEK — Swedish Krona"
+              - option "SGD — Singapore Dollar"
+              - option "THB — Thai Baht"
+              - option "TRY — Turkish Lira"
+              - option "USD — US Dollar" [selected]
+              - option "ZAR — South African Rand"
+        - generic [ref=e123]:
+          - generic [ref=e125]: Category
+          - combobox "Category" [ref=e126]:
+            - option "Transport" [selected]
+            - option "Food & Dining"
+            - option "Office Supplies"
+            - option "Software & Subscriptions"
+            - option "Professional Services"
+            - option "Marketing & Advertising"
+            - option "Rent & Utilities"
+            - option "Phone & Internet"
+            - option "Travel"
+            - option "Equipment"
+            - option "Bank Fees"
+            - option "Government & Visa Fees"
+            - option "Education & Training"
+            - option "Healthcare"
+            - option "Insurance"
+            - option "Entertainment"
+            - option "Other"
+        - generic [ref=e127]:
+          - generic [ref=e128]: Payment Method (optional)
+          - combobox "Payment Method (optional)" [ref=e129]:
+            - option "— Select —" [selected]
+            - option "Cash"
+            - option "Card"
+            - option "Bank Transfer"
+            - option "Wallet"
+            - option "Cheque"
+            - option "Other"
+        - generic [ref=e131] [cursor=pointer]:
+          - checkbox "VAT applies" [ref=e132]
+          - text: VAT applies
+        - generic [ref=e133]:
+          - generic [ref=e134]: Date
+          - textbox "Date" [ref=e135]: 2026-05-31
+        - generic [ref=e136]:
+          - generic [ref=e137]: Note (optional, max 500)
+          - textbox "Note (optional, max 500)" [ref=e138]:
+            - /placeholder: e.g. Lunch with client
+        - generic [ref=e139]:
+          - generic [ref=e140]: Receipt (optional)
+          - button "Choose File" [ref=e141]
+        - button "Save Transaction" [ref=e142] [cursor=pointer]
