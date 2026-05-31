@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { CURRENCIES, DEFAULT_BASE_CURRENCY } from "@/lib/currencies";
+import * as guestStore from "@/lib/guestStore";
 
 function GoogleIcon() {
   return (
@@ -63,6 +64,29 @@ export default function SignUpPage() {
         router.push("/sign-in");
         return;
       }
+
+      // Migrate any guest localStorage data now that the session is established.
+      if (guestStore.hasGuestData()) {
+        try {
+          const guestTransactions = guestStore.getTransactions();
+          const guestBudgets = guestStore.getBudgets();
+          if (guestTransactions.length > 0 || guestBudgets.length > 0) {
+            await fetch("/api/migrate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                transactions: guestTransactions,
+                budgets: guestBudgets,
+              }),
+            });
+          }
+          guestStore.clearGuestData();
+        } catch {
+          // Migration failure is non-fatal — proceed to dashboard.
+          // Guest data remains in localStorage for a manual retry if needed.
+        }
+      }
+
       router.push("/dashboard");
       router.refresh();
     } catch {

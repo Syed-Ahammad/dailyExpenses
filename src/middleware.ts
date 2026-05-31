@@ -10,7 +10,9 @@ import { rateLimitRequest } from "@/lib/rateLimit";
 
 const { auth } = NextAuth(authConfig);
 
-const PROTECTED_PAGES = ["/dashboard", "/budgets", "/reports"];
+// /dashboard is intentionally excluded — unauthenticated visitors get the
+// guest trial experience (GuestDashboard component) instead of a redirect.
+const PROTECTED_PAGES = ["/budgets", "/reports"];
 const AUTH_PAGES = ["/sign-in", "/sign-up"];
 const STATE_CHANGING = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 

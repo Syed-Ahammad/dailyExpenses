@@ -3,6 +3,8 @@ import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
 const transactionSchema = new Schema(
   {
     userId: { type: String, required: true, index: true },
+    // Idempotency key set by the guest-migration flow (POST /api/migrate).
+    clientId: { type: String, sparse: true },
     type: { type: String, enum: ["expense", "income"], required: true },
     amountMinor: { type: Number, required: true, min: 0 },
     currency: { type: String, required: true },

@@ -1,0 +1,143 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - heading "Dashboard" [level=1] [ref=e5]
+        - paragraph [ref=e6]: Guest mode · All amounts in AED
+      - generic [ref=e7]:
+        - link "Sign in" [ref=e8] [cursor=pointer]:
+          - /url: /sign-in
+        - link "Sign up free" [ref=e9] [cursor=pointer]:
+          - /url: /sign-up
+    - region "Monthly summary" [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - paragraph [ref=e46]: Expense Today
+          - paragraph [ref=e47]: AED 50.00
+        - generic [ref=e48]:
+          - paragraph [ref=e49]: Expense This Week
+          - paragraph [ref=e50]: AED 50.00
+        - generic [ref=e51]:
+          - paragraph [ref=e52]: Expense This Month
+          - paragraph [ref=e53]: AED 50.00
+        - generic [ref=e54]:
+          - paragraph [ref=e55]: Income This Month
+          - paragraph [ref=e56]: AED 0.00
+        - generic [ref=e57]:
+          - paragraph [ref=e58]: Balance This Month
+          - paragraph [ref=e59]: AED -50.00
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - region "Category breakdown" [ref=e66]:
+          - heading "Spending by Category" [level=2] [ref=e67]
+          - list [ref=e68]:
+            - listitem [ref=e69]:
+              - generic [ref=e70]:
+                - generic [ref=e71]: Food & Dining
+                - generic [ref=e72]: AED 50.00
+        - region "Recent transactions" [ref=e12]:
+          - heading "Recent Transactions" [level=2] [ref=e13]
+          - table [ref=e77]:
+            - rowgroup [ref=e78]:
+              - row "Date Category Note Amount Actions" [ref=e79]:
+                - columnheader "Date" [ref=e80]
+                - columnheader "Category" [ref=e81]
+                - columnheader "Note" [ref=e82]
+                - columnheader "Amount" [ref=e83]
+                - columnheader "Actions" [ref=e84]:
+                  - generic [ref=e85]: Actions
+            - rowgroup [ref=e86]:
+              - row "31 May 2026 Food & Dining Lunch test −AED 50.00 Edit Delete" [ref=e87]:
+                - cell "31 May 2026" [ref=e88]
+                - cell "Food & Dining" [ref=e89]
+                - cell "Lunch test" [ref=e90]
+                - cell "−AED 50.00" [ref=e91]
+                - cell "Edit Delete" [ref=e92]:
+                  - button "Edit" [ref=e93] [cursor=pointer]
+                  - button "Delete" [ref=e94] [cursor=pointer]
+      - generic [ref=e16]:
+        - heading "Add Transaction" [level=2] [ref=e17]
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - button "Expense" [ref=e20] [cursor=pointer]
+            - button "Income" [ref=e21] [cursor=pointer]
+          - generic [ref=e22]:
+            - generic [ref=e23]:
+              - generic [ref=e24]: Amount
+              - spinbutton "Amount" [ref=e25]
+            - generic [ref=e26]:
+              - generic [ref=e27]: Currency
+              - combobox "Currency" [ref=e28]:
+                - option "AED" [selected]
+                - option "AUD"
+                - option "BDT"
+                - option "BHD"
+                - option "BRL"
+                - option "CAD"
+                - option "CHF"
+                - option "CNY"
+                - option "DKK"
+                - option "EGP"
+                - option "EUR"
+                - option "GBP"
+                - option "HKD"
+                - option "IDR"
+                - option "INR"
+                - option "JPY"
+                - option "KES"
+                - option "KRW"
+                - option "KWD"
+                - option "LKR"
+                - option "MXN"
+                - option "MYR"
+                - option "NGN"
+                - option "NOK"
+                - option "NZD"
+                - option "OMR"
+                - option "PHP"
+                - option "PKR"
+                - option "QAR"
+                - option "SAR"
+                - option "SEK"
+                - option "SGD"
+                - option "THB"
+                - option "TRY"
+                - option "USD"
+                - option "ZAR"
+          - generic [ref=e29]:
+            - generic [ref=e30]: Category
+            - combobox "Category" [ref=e31]:
+              - option "Transport"
+              - option "Food & Dining" [selected]
+              - option "Office Supplies"
+              - option "Software & Subscriptions"
+              - option "Professional Services"
+              - option "Marketing & Advertising"
+              - option "Rent & Utilities"
+              - option "Phone & Internet"
+              - option "Travel"
+              - option "Equipment"
+              - option "Bank Fees"
+              - option "Government & Visa Fees"
+              - option "Education & Training"
+              - option "Healthcare"
+              - option "Insurance"
+              - option "Entertainment"
+              - option "Other"
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - generic [ref=e34]: Note
+              - textbox "Note" [ref=e35]:
+                - /placeholder: Optional
+            - generic [ref=e36]:
+              - generic [ref=e37]: Date
+              - textbox "Date" [ref=e38]: 2026-05-31
+          - generic [ref=e40] [cursor=pointer]:
+            - checkbox "VAT applies" [ref=e41]
+            - text: VAT applies
+          - button "Add transaction" [active] [ref=e42] [cursor=pointer]
+    - status [ref=e61]:
+      - generic [ref=e62]:
+        - generic [ref=e63]: You're using Daily Expenses as a guest. Data is saved on this device for 14 days.
+        - button "Dismiss" [ref=e64] [cursor=pointer]: ✕
+  - alert [ref=e65]

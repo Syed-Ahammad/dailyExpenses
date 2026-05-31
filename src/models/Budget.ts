@@ -3,6 +3,8 @@ import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
 const budgetSchema = new Schema(
   {
     userId: { type: String, required: true },
+    // Idempotency key set by the guest-migration flow (POST /api/migrate).
+    clientId: { type: String, sparse: true },
     category: { type: String, required: true },
     limitMinorBase: { type: Number, required: true, min: 0 },
     warnAtPercent: { type: Number, default: 80, min: 1, max: 100 },

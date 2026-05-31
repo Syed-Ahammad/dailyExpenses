@@ -12,7 +12,7 @@
 
 import Link from "next/link";
 import { connectMongo } from "@/lib/mongodb";
-import { getUserId, getUserBaseCurrency } from "@/lib/auth";
+import { auth, getUserId, getUserBaseCurrency } from "@/lib/auth";
 import { getDashboard } from "@/lib/dashboard";
 import type { DashboardResponse } from "@/lib/dashboard";
 import { TransactionModel } from "@/models/Transaction";
@@ -22,6 +22,8 @@ import AddTransactionForm from "@/components/AddTransactionForm";
 import TransactionList from "@/components/TransactionList";
 import type { TransactionView } from "@/components/TransactionList";
 import SignOutButton from "@/components/SignOutButton";
+import GuestDashboard from "@/components/GuestDashboard";
+import { DEFAULT_BASE_CURRENCY } from "@/lib/currencies";
 
 // The dashboard reflects live per-request data, so it must never be statically
 // prerendered. Until auth (which reads the session) makes this implicit, force
@@ -76,9 +78,13 @@ type LeanTransaction = Transaction & { _id: unknown };
  * becomes `user.baseCurrency` once the User model and auth land in Phase 2.
  */
 export default async function DashboardPage() {
-  // getUserBaseCurrency() is the base-currency seam — Phase 2 makes it
-  // return user.baseCurrency from the auth session.
-  const baseCurrency = await getUserBaseCurrency();
+  // Unauthenticated visitors get the guest trial experience.
+  const session = await auth();
+  if (!session?.user?.id) {
+    return <GuestDashboard />;
+  }
+
+  const baseCurrency = session.user.baseCurrency ?? DEFAULT_BASE_CURRENCY;
 
   let dashboard: DashboardResponse = EMPTY_DASHBOARD;
   let recentTransactions: LeanTransaction[] = [];
@@ -86,7 +92,7 @@ export default async function DashboardPage() {
 
   try {
     await connectMongo();
-    const userId = await getUserId();
+    const userId = session.user.id;
 
     // Run both queries in parallel — getDashboard already uses Promise.all
     // internally for its $facet + budgets fetch, so this adds a second parallel
