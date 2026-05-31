@@ -1,0 +1,62 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]: D
+        - heading "Daily Expenses" [level=1] [ref=e6]
+        - paragraph [ref=e7]: Create your account
+      - form "Sign up" [ref=e8]:
+        - alert [ref=e24]: email already in use
+        - generic [ref=e9]:
+          - generic [ref=e10]: Email
+          - textbox "Email" [ref=e11]: test_port3000@example.com
+        - generic [ref=e12]:
+          - generic [ref=e13]: Password
+          - textbox "Password" [ref=e14]: TestPass123!
+          - paragraph [ref=e15]: Min 10 characters, at least one letter and one digit.
+        - generic [ref=e16]:
+          - generic [ref=e17]: Base currency
+          - combobox "Base currency" [ref=e18]:
+            - option "AED — UAE Dirham"
+            - option "AUD — Australian Dollar"
+            - option "BDT — Bangladeshi Taka"
+            - option "BHD — Bahraini Dinar"
+            - option "BRL — Brazilian Real"
+            - option "CAD — Canadian Dollar"
+            - option "CHF — Swiss Franc"
+            - option "CNY — Chinese Yuan"
+            - option "DKK — Danish Krone"
+            - option "EGP — Egyptian Pound"
+            - option "EUR — Euro"
+            - option "GBP — British Pound Sterling"
+            - option "HKD — Hong Kong Dollar"
+            - option "IDR — Indonesian Rupiah"
+            - option "INR — Indian Rupee"
+            - option "JPY — Japanese Yen"
+            - option "KES — Kenyan Shilling"
+            - option "KRW — South Korean Won"
+            - option "KWD — Kuwaiti Dinar"
+            - option "LKR — Sri Lankan Rupee"
+            - option "MXN — Mexican Peso"
+            - option "MYR — Malaysian Ringgit"
+            - option "NGN — Nigerian Naira"
+            - option "NOK — Norwegian Krone"
+            - option "NZD — New Zealand Dollar"
+            - option "OMR — Omani Rial"
+            - option "PHP — Philippine Peso"
+            - option "PKR — Pakistani Rupee"
+            - option "QAR — Qatari Riyal"
+            - option "SAR — Saudi Riyal"
+            - option "SEK — Swedish Krona"
+            - option "SGD — Singapore Dollar"
+            - option "THB — Thai Baht"
+            - option "TRY — Turkish Lira"
+            - option "USD — US Dollar" [selected]
+            - option "ZAR — South African Rand"
+          - paragraph [ref=e19]: Cannot be changed after signup.
+        - button "Create account" [ref=e20] [cursor=pointer]
+      - paragraph [ref=e21]:
+        - text: Already have an account?
+        - link "Sign in" [ref=e22] [cursor=pointer]:
+          - /url: /sign-in
+  - alert [ref=e23]

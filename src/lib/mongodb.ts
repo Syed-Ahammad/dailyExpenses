@@ -4,13 +4,8 @@
 // This is the standard Next.js + Mongoose pattern.
 
 import mongoose from "mongoose";
-const dns = require("dns") as typeof import("dns"); // CommonJS — bypasses webpack's browser DNS polyfill
-
-// Node.js's c-ares DNS resolver can fail to reach the system DNS server on
-// some Windows setups (ECONNREFUSED on querySrv). Force public resolvers so
-// mongodb+srv:// SRV lookups succeed. Using require() avoids webpack stubbing
-// the dns module with a browser polyfill.
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
+// CommonJS require avoids webpack stubbing the dns module with a browser polyfill.
+const dns = require("dns") as typeof import("dns");
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -38,6 +33,12 @@ export async function connectMongo(): Promise<typeof mongoose> {
   }
 
   if (!cached.promise) {
+    // Force public DNS resolvers so mongodb+srv:// SRV lookups succeed on
+    // Windows (c-ares can ECONNREFUSED the system resolver for SRV queries).
+    // Called here — not at module load — so it applies regardless of bundle
+    // split / worker context when the first connection is actually attempted.
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
     cached.promise = mongoose
       .connect(uri, { bufferCommands: false })
       .catch((err) => {

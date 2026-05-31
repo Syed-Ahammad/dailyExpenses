@@ -44,7 +44,21 @@
       "Bash(npm install *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(netstat -ano)",
+      "Bash(/c/Windows/System32/netstat.exe -ano)",
+      "Bash(/c/Windows/System32/tasklist.exe /FI \"PID eq 16788\" /FI \"PID eq 29488\")",
+      "Bash(/c/Windows/System32/tasklist.exe /FI 'PID eq __TRACKED_VAR__' /NH)",
+      "Bash(export MSYS_NO_PATHCONV=1)",
+      "Bash(grep -v \"^$\")",
+      "Bash(python -m json.tool)",
+      "Bash(Select-String -Path \"D:\\\\dailyExpenses\\\\.env.local\" -Pattern \"NEXTAUTH\")",
+      "Bash(Select-Object -ExpandProperty Line)",
+      "Bash(awk '{print $NF}')",
+      "Bash(fuser -k 3001/tcp)",
+      "Bash(pkill -f \"next-server\")",
+      "Bash(kill 960 1045)",
+      "Bash(npm --prefix D:/dailyExpenses run dev)"
     ]
   }
 }

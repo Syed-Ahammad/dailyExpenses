@@ -10,6 +10,7 @@
 
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { authConfig } from "./auth.config";
 import { connectMongo } from "./mongodb";
@@ -45,7 +46,58 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         };
       },
     }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
   ],
+  callbacks: {
+    // On Google sign-in, upsert the user so they have a DB record + baseCurrency.
+    async signIn({ account, profile }) {
+      if (account?.provider === "google") {
+        if (!profile?.email) return false;
+        await connectMongo();
+        const email = profile.email.toLowerCase();
+        const existing = await UserModel.findOne({ email }).lean();
+        if (!existing) {
+          await UserModel.create({
+            email,
+            baseCurrency: DEFAULT_BASE_CURRENCY,
+            ...(profile.name ? { name: profile.name } : {}),
+          });
+        }
+      }
+      return true;
+    },
+
+    // Persist id + baseCurrency into the JWT on first sign-in.
+    // For Google: fetch from DB (profile has no baseCurrency).
+    // For Credentials: user object from authorize() already has both.
+    async jwt({ token, user, account, profile }) {
+      if (account?.provider === "google" && profile?.email) {
+        await connectMongo();
+        const dbUser = await UserModel.findOne({
+          email: profile.email.toLowerCase(),
+        }).lean();
+        if (dbUser) {
+          token.id = String(dbUser._id);
+          token.baseCurrency = dbUser.baseCurrency;
+        }
+      } else if (user) {
+        token.id = user.id!;
+        if (user.baseCurrency) token.baseCurrency = user.baseCurrency;
+      }
+      return token;
+    },
+
+    session({ session, token }) {
+      if (typeof token.id === "string") session.user.id = token.id;
+      if (typeof token.baseCurrency === "string") {
+        session.user.baseCurrency = token.baseCurrency;
+      }
+      return session;
+    },
+  },
 });
 
 // A valid bcrypt hash of a random string, used only to equalize timing for the

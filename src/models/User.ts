@@ -9,7 +9,8 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    passwordHash: { type: String, required: true },
+    // Optional: not set for OAuth-only accounts (Google, etc.)
+    passwordHash: { type: String },
     name: { type: String },
     baseCurrency: {
       type: String,

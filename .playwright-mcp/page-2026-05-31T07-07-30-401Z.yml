@@ -1,0 +1,136 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e23]
+  - main [ref=e24]:
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - heading "Dashboard" [level=1] [ref=e27]
+        - paragraph [ref=e28]: All amounts in USD
+      - generic [ref=e29]:
+        - link "Budgets" [ref=e30] [cursor=pointer]:
+          - /url: /budgets
+        - link "Reports" [ref=e31] [cursor=pointer]:
+          - /url: /reports
+        - button "Sign out" [ref=e32] [cursor=pointer]
+    - region "Monthly summary" [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - paragraph [ref=e36]: Expense Today
+          - paragraph [ref=e37]: USD 0.00
+        - generic [ref=e38]:
+          - paragraph [ref=e39]: Expense This Week
+          - paragraph [ref=e40]: USD 0.00
+        - generic [ref=e41]:
+          - paragraph [ref=e42]: Expense This Month
+          - paragraph [ref=e43]: USD 0.00
+        - generic [ref=e44]:
+          - paragraph [ref=e45]: Income This Month
+          - paragraph [ref=e46]: USD 0.00
+        - generic [ref=e47]:
+          - paragraph [ref=e48]: Balance This Month
+          - paragraph [ref=e49]: USD 0.00
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - region "Category breakdown" [ref=e52]:
+          - heading "Spending by Category" [level=2] [ref=e53]
+          - paragraph [ref=e54]: No expenses this month.
+        - region "Recent transactions" [ref=e55]:
+          - heading "Recent Transactions" [level=2] [ref=e56]
+          - paragraph [ref=e57]: No transactions recorded yet.
+      - form "Add transaction" [ref=e59]:
+        - heading "Add Transaction" [level=2] [ref=e60]
+        - group "Type" [ref=e61]:
+          - generic [ref=e62]: Type
+          - generic [ref=e63]:
+            - generic [ref=e64] [cursor=pointer]:
+              - radio "expense" [checked] [ref=e65]
+              - generic [ref=e66]: expense
+            - generic [ref=e67] [cursor=pointer]:
+              - radio "income" [ref=e68]
+              - generic [ref=e69]: income
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: Amount
+            - spinbutton "Amount" [ref=e73]
+          - generic [ref=e74]:
+            - generic [ref=e75]: Currency
+            - combobox "Currency" [ref=e76]:
+              - option "AED — UAE Dirham"
+              - option "AUD — Australian Dollar"
+              - option "BDT — Bangladeshi Taka"
+              - option "BHD — Bahraini Dinar"
+              - option "BRL — Brazilian Real"
+              - option "CAD — Canadian Dollar"
+              - option "CHF — Swiss Franc"
+              - option "CNY — Chinese Yuan"
+              - option "DKK — Danish Krone"
+              - option "EGP — Egyptian Pound"
+              - option "EUR — Euro"
+              - option "GBP — British Pound Sterling"
+              - option "HKD — Hong Kong Dollar"
+              - option "IDR — Indonesian Rupiah"
+              - option "INR — Indian Rupee"
+              - option "JPY — Japanese Yen"
+              - option "KES — Kenyan Shilling"
+              - option "KRW — South Korean Won"
+              - option "KWD — Kuwaiti Dinar"
+              - option "LKR — Sri Lankan Rupee"
+              - option "MXN — Mexican Peso"
+              - option "MYR — Malaysian Ringgit"
+              - option "NGN — Nigerian Naira"
+              - option "NOK — Norwegian Krone"
+              - option "NZD — New Zealand Dollar"
+              - option "OMR — Omani Rial"
+              - option "PHP — Philippine Peso"
+              - option "PKR — Pakistani Rupee"
+              - option "QAR — Qatari Riyal"
+              - option "SAR — Saudi Riyal"
+              - option "SEK — Swedish Krona"
+              - option "SGD — Singapore Dollar"
+              - option "THB — Thai Baht"
+              - option "TRY — Turkish Lira"
+              - option "USD — US Dollar" [selected]
+              - option "ZAR — South African Rand"
+        - generic [ref=e77]:
+          - generic [ref=e79]: Category
+          - combobox "Category" [ref=e80]:
+            - option "Transport" [selected]
+            - option "Food & Dining"
+            - option "Office Supplies"
+            - option "Software & Subscriptions"
+            - option "Professional Services"
+            - option "Marketing & Advertising"
+            - option "Rent & Utilities"
+            - option "Phone & Internet"
+            - option "Travel"
+            - option "Equipment"
+            - option "Bank Fees"
+            - option "Government & Visa Fees"
+            - option "Education & Training"
+            - option "Healthcare"
+            - option "Insurance"
+            - option "Entertainment"
+            - option "Other"
+        - generic [ref=e81]:
+          - generic [ref=e82]: Payment Method (optional)
+          - combobox "Payment Method (optional)" [ref=e83]:
+            - option "— Select —" [selected]
+            - option "Cash"
+            - option "Card"
+            - option "Bank Transfer"
+            - option "Wallet"
+            - option "Cheque"
+            - option "Other"
+        - generic [ref=e85] [cursor=pointer]:
+          - checkbox "VAT applies" [ref=e86]
+          - text: VAT applies
+        - generic [ref=e87]:
+          - generic [ref=e88]: Date
+          - textbox "Date" [ref=e89]: 2026-05-31
+        - generic [ref=e90]:
+          - generic [ref=e91]: Note (optional, max 500)
+          - textbox "Note (optional, max 500)" [ref=e92]:
+            - /placeholder: e.g. Lunch with client
+        - generic [ref=e93]:
+          - generic [ref=e94]: Receipt (optional)
+          - button "Choose File" [ref=e95]
+        - button "Save Transaction" [ref=e96] [cursor=pointer]
