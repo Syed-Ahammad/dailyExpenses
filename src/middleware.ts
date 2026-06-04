@@ -12,7 +12,15 @@ const { auth } = NextAuth(authConfig);
 
 // /dashboard is intentionally excluded — unauthenticated visitors get the
 // guest trial experience (GuestDashboard component) instead of a redirect.
-const PROTECTED_PAGES = ["/budgets", "/reports", "/billing", "/recurring"];
+const PROTECTED_PAGES = [
+  "/budgets",
+  "/reports",
+  "/billing",
+  "/recurring",
+  "/settings",
+  "/sharing",
+  "/shared",
+];
 const AUTH_PAGES = ["/sign-in", "/sign-up"];
 const STATE_CHANGING = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 
@@ -73,8 +81,13 @@ export default auth(async (req) => {
   // The route itself checks CRON_SECRET via Authorization header.
   const isRecurringProcess = pathname === "/api/recurring/process";
 
+  // Share-accept is called right after sign-in redirect; the route itself
+  // checks session via getUserId, so middleware auth guard is redundant here
+  // but we exempt it to avoid double-redirect loops.
+  const isSharingAccept = pathname === "/api/sharing/accept";
+
   // Protect owned API routes with a 401 JSON (not an HTML redirect).
-  if (isApi && !isAuthApi && !isStripeWebhook && !isRecurringProcess && !isLoggedIn) {
+  if (isApi && !isAuthApi && !isStripeWebhook && !isRecurringProcess && !isSharingAccept && !isLoggedIn) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

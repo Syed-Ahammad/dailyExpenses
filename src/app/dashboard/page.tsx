@@ -23,6 +23,7 @@ import TransactionList from "@/components/TransactionList";
 import type { TransactionView } from "@/components/TransactionList";
 import SignOutButton from "@/components/SignOutButton";
 import GuestDashboard from "@/components/GuestDashboard";
+import SharedAccountsSection from "@/components/SharedAccountsSection";
 import { DEFAULT_BASE_CURRENCY } from "@/lib/currencies";
 
 // The dashboard reflects live per-request data, so it must never be statically
@@ -168,6 +169,12 @@ export default async function DashboardPage() {
           >
             Recurring
           </Link>
+          <Link
+            href="/settings"
+            className="rounded-pill px-3 py-1.5 text-sm font-medium text-green transition-colors hover:bg-green-soft focus:outline-none focus:ring-2 focus:ring-green-soft"
+          >
+            Settings
+          </Link>
           <SignOutButton />
         </div>
       </div>
@@ -302,6 +309,9 @@ export default async function DashboardPage() {
               transactions={transactionViews}
             />
           </section>
+
+          {/* Shared accounts — shown only when the user has been granted viewer access */}
+          <SharedAccountsSection />
         </div>
 
         {/* Right column: add transaction form */}

@@ -53,6 +53,19 @@ Status values: Done, In progress, Planned.
 | Subscription plans                   | Planned     | FR-27       |
 | Plan-based feature gating            | Planned     | FR-28       |
 
+## Phase 7 — Shared access
+
+| Feature                                         | Status | Requirement |
+|-------------------------------------------------|--------|-------------|
+| Owner invites viewer by email                   | Done   | FR-32       |
+| Invite link copy (no-email fallback)            | Done   | FR-32       |
+| Invite accept via token                         | Done   | FR-32       |
+| Owner can revoke access from Settings           | Done   | FR-32       |
+| Viewer read-only dashboard + transactions       | Done   | FR-33       |
+| Viewer CSV/PDF monthly export                   | Done   | FR-33       |
+| Viewer VAT report (CSV/PDF/JSON)                | Done   | FR-33       |
+| Shared accounts section on grantee's dashboard  | Done   | FR-33       |
+
 ## Phase 6 — Recurring templates
 
 | Feature                              | Status      | Requirement |

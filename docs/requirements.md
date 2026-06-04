@@ -82,6 +82,15 @@ requirement has an ID (FR-n) for reference in other documents.
   period, all expressed in the user's base currency. The report is
   available as on-screen summary, CSV, and PDF.
 
+### Shared access
+
+- FR-32: An owner can invite another user by email to view their account as a
+  read-only viewer. The invite is a one-time link that expires in 7 days. The
+  owner can revoke access at any time from the Settings page.
+- FR-33: A viewer can access the owner's dashboard summary, recent transactions,
+  monthly CSV/PDF export, and VAT report in read-only mode. All write operations
+  (add/edit/delete transactions, budgets, settings) remain restricted to the owner.
+
 ### Recurring templates
 
 - FR-30: A user can create a recurring transaction template specifying amount,
